@@ -1,5 +1,5 @@
-var fs = require('fs')
-,http = require('http'),
+var fs = require('fs'),
+http = require('http'),
 socketio = require('socket.io'),
 url = require("url"), 
 SerialPort = require("serialport").SerialPort
@@ -67,7 +67,7 @@ function initSocketIO(httpServer,debug)
 
 function SocketIO_serialemit(sendData)
 {
-	console.log("serial emit: ",sendData);
+	//console.log("serial emit: ",sendData);
 	socketServer.emit('updateData',{pollOneValue:sendData});
       //socketServer.emit('update', sendData);
 }
@@ -85,8 +85,6 @@ function SocketIO_serialemitState(stateData)
 	console.log("state: ",stateData);
       //socketServer.emit('update', sendData);
 }
-
-
 
 // Listen to serial port
 function serialListener(debug) 
@@ -142,9 +140,6 @@ function serialListener(debug)
 	    		stateData = receivedData .substring(receivedData .indexOf('S') + 1, receivedData .indexOf('D'));
 	    		SocketIO_serialemitState(stateData);
 	    	}
-
-
-
 
 	      // send the incoming data to browser with websockets.
 	      //console.log("serial emit: ",sendData);

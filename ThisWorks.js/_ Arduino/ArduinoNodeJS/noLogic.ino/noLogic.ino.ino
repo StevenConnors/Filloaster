@@ -3,6 +3,10 @@
 #include "snep.h"
 #include "NdefMessage.h"
 
+
+// Delete this for actual
+int noLogic = 1;
+
 //NFC Constants
 PN532_SPI pn532spi(SPI, 10);
 SNEP nfc(pn532spi);
@@ -82,6 +86,7 @@ void loop()
   int analogValue = analogRead(0);
   analogValueAverage = 0.99*analogValueAverage + 0.01*analogValue;
   float load = analogToLoad(analogValue) * 1000;
+  /*
   //Load is in mL
   Serial.print("S");
   Serial.print(Filloaster_State);
@@ -235,6 +240,7 @@ void loop()
     //Code to receive signal from webserver and to modify refillThreshold
     //Then jump to State 3
   } 
+  */
 
   // Potmeter
    sensorValue = analogRead(analogInPin);  

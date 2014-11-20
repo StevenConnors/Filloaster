@@ -2,7 +2,7 @@
 <html>
 <head>    
 	<link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
-	<style>
+	<style type="text/css">
 		body {
 			margin: 0px;
 			padding: 0px;
@@ -29,7 +29,6 @@
 			text-align:center;
 		}
 	</style>
-	<script src="http://code.jquery.com/jquery-1.8.3.js"></script>
 	<script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
 	<script>
@@ -163,13 +162,13 @@
 			prevPotValue = potValue;
 			animation(poll1,text, drink);
 		}
-		
+
 		function initButton()
 		{
 			$( "#check" ).button();
 		}
-		
-		
+
+
 		window.onload = function() {
 			initSocketIO();
 		};
@@ -184,6 +183,7 @@
 	</script>
 </head>
 
+
 <!-- From here is the actual html-->
 <body>
 	<div id="rData">
@@ -197,5 +197,10 @@
 			<input type="checkbox" id="check" value="toggle"/><label for="check">Pres for LED</label>
 		</div>
 	</div> 
+	<div> 
+		<a href="dashboard"> Click me to jump to go back to dashboard </a>
+		<a href="main"> Click me to log out</a>
+
+	</div>
 </body>
 </html>
