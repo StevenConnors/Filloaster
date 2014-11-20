@@ -48,11 +48,22 @@ function sendRestaurant(response) {
   response.end(html);
 }
 
+
+
+function sendCSS(response) {
+  console.log("Request handler 'CSS' was called.");
+  response.writeHead(200, {"Content-Type": "text/css"});
+  var css = fs.readFileSync(__dirname + "/pages/style.css")
+  response.end(css);
+}
+
+
 exports.sendRestaurant = sendRestaurant;
 exports.sendMain = sendMain;
 exports.sendLogin = sendLogin;
 exports.sendDashboard = sendDashboard;
 exports.sendRandompage = sendRandompage;
 exports.sendInterface = sendInterface;
+exports.sendCSS = sendCSS;
 
 

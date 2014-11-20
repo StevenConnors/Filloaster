@@ -14,6 +14,7 @@ handle["/login"] = requestHandlers.sendLogin;
 handle["/main"] = requestHandlers.sendMain;
 handle["/restaurant"] = requestHandlers.sendRestaurant;
 
+handle["/style.css"] = requestHandlers.sendCSS;
 
 // Add additional links here using handle[/link] = requestHandlers.sendPathname;
 
