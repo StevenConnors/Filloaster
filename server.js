@@ -51,15 +51,6 @@ function initSocketIO(httpServer,debug)
 		{
 			socket.emit('updateData',{pollOneValue:data});
 		});
-
-		socket.on('buttonval', function(data) 
-		{
-			serialPort.write(data + 'E');
-		});
-		
-		socket.on('sliderval', function(data) {
-			serialPort.write(data + 'P');
-		});
 	});
 }
 
@@ -67,9 +58,7 @@ function initSocketIO(httpServer,debug)
 
 function SocketIO_serialemit(sendData)
 {
-	//console.log("serial emit: ",sendData);
 	socketServer.emit('updateData',{pollOneValue:sendData});
-      //socketServer.emit('update', sendData);
 }
 
 function SocketIO_serialemitDrink(drinkData)
@@ -103,18 +92,17 @@ function serialListener(debug)
 	serialPort.on("open", function () 
 	{
 		console.log('open serial communication');
-		drink_notSet = true;
 	    // Listens to incoming data
 	    serialPort.on('data', function(data) 
 	    {
 	    	receivedData += data.toString();
-	    	//
 	    	if (receivedData .indexOf('E') >= 0 && receivedData .indexOf('B') >= 0) 
 	    	{
 	    		sendData = receivedData .substring(receivedData .indexOf('B') + 1, receivedData .indexOf('E'));
 	    		receivedData = '';
-	    		SocketIO_serialemit(sendData);
 	    	}
+	    	SocketIO_serialemit(sendData);
+
 	    	//Read NFC values
 	    	if (receivedData .indexOf('N') >= 0 && receivedData .indexOf('C') >= 0 && drink_notSet) 
 	    	{
@@ -124,23 +112,8 @@ function serialListener(debug)
 	    		{
 	    			drink_is = drinkData;
 	    			SocketIO_serialemitDrink(drinkData);
-	    			drink_notSet = false;
 	    		}
 	    	}
-
-	    	if (drink_notSet == false)
-	    	{
-	    		SocketIO_serialemitDrink(drink_is);
-	    	}
-
-
-			//Display Filloaster State	    	
-	    	if (receivedData .indexOf('S') >= 0 && receivedData .indexOf('D') >= 0) 
-	    	{
-	    		stateData = receivedData .substring(receivedData .indexOf('S') + 1, receivedData .indexOf('D'));
-	    		SocketIO_serialemitState(stateData);
-	    	}
-
 	      // send the incoming data to browser with websockets.
 	      //console.log("serial emit: ",sendData);
 	      //socketServer.emit('update', sendData);
@@ -152,5 +125,4 @@ function serialListener(debug)
 	  	});
 	});
 }
-
 exports.start = startServer;
