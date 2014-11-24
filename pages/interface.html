@@ -17,6 +17,7 @@
 	var prevPotValue;
 	var toggleVal = 0;
 
+	var drink = "none";
 
 	window.onload = function() 
 	{
@@ -36,6 +37,12 @@
 			{
 				pollOneH = recievedData.pollOneValue/2; // recieve start poll value from server
 			});
+
+			/*iosocket.on('updateDrink', function(drinkData)
+			{
+				drink = drinkData.drink;
+			});*/
+
 		});
 	}
 
@@ -84,6 +91,9 @@
 		}
 
 		content.fillText('Potmeter value: ' + potValue, text.x, text.y);
+		content.fillText('Drink is: ' + potValue, text.x, text.y-40);
+
+
 		//Determines color
 		content.fillStyle = 'black';
 		if (potValue>500)

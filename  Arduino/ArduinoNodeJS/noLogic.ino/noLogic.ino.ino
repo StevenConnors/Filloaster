@@ -1,18 +1,16 @@
-#include "SPI.h"
-#include "PN532_SPI.h"
-#include "snep.h"
-#include "NdefMessage.h"
+#include <SPI.h>
+#include <PN532_SPI.h>
+#include "PN532.h"
+
+//NFC things
+PN532_SPI pn532spi(SPI, 10);
+PN532 nfc(pn532spi);
 
 
 // Delete this for actual
 int noLogic = 1;
 
-//NFC Constants
-PN532_SPI pn532spi(SPI, 10);
-SNEP nfc(pn532spi);
-uint8_t ndefBuf[128];
-//NFC Vars
-String drinkType = "";
+
 
 // LED vars 
 const int ledPin = 13;
@@ -52,7 +50,7 @@ float amountDrunk = 0;
 float totalAmountDrunk = 0;
 float refillThreshold = 0.5;
 
-
+boolean drinkDetermined = false;
 
 void setup() {
   // initialize serial:
@@ -60,47 +58,89 @@ void setup() {
   // init LEDS
   pinMode(ledPin,OUTPUT);
   digitalWrite(ledPin,0);
+
+  Serial.println("Hello!");
+
+  nfc.begin();
+
+
+  nfc.setPassiveActivationRetries(0xFF);
+  nfc.SAMConfig();    
+  Serial.println("Waiting for an ISO14443A card");
 }
 
 
 void loop() 
 {
-   // Recieve data from Node and write it to a String
-   while (Serial.available() && toggleComplete == false) 
-   {
-    inChar = (char)Serial.read();
-    if(inChar == 'E')
-    { // end character for led
-     toggleComplete = true;
+  boolean success;
+  uint8_t uid[] = { 0, 0, 0, 0, 0, 0, 0 };  // Buffer to store the returned UID
+  uint8_t uidLength;                        // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
+  if (!(drinkDetermined))
+  {
+  
+    success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, &uid[0], &uidLength);
+    if (success) 
+    {
+      Serial.print("UID Value: ");
+
+      Serial.print("N"); // begin character 
+      for (uint8_t i=0; i < uidLength; i++) 
+      {
+        Serial.print(uid[i], HEX); 
+      }
+      Serial.print("C"); // end character
+
+      drinkDetermined = true;
+      // Wait 1 second before continuing
     }
     else
     {
-      inputString += inChar; 
+      // PN532 probably timed out waiting for a card
+      Serial.println("Timed out waiting for a card");
     }
   }
-  // Toggle LED 13
-  if(!Serial.available() && toggleComplete == true)
-  {
-    toggling();
-  }
-  int analogValue = analogRead(0);
-  analogValueAverage = 0.99*analogValueAverage + 0.01*analogValue;
-  float load = analogToLoad(analogValue) * 1000;
-  // Potmeter
-   sensorValue = analogRead(analogInPin);  
 
-  // read the analog in value:
-  if(prevValue != sensorValue)
-  {
-    Serial.print("B"); // begin character 
-    //Serial.print(Filloaster_State);
-    //Serial.print(".....");
-    //Serial.print(load); Not fully accurate 
-    Serial.print(sensorValue); 
-    Serial.print("E"); // end character
-    prevValue = sensorValue;
-  } 
-  delay(50); // give the Arduino some breathing room.
+
+  if (drinkDetermined){
+
+
+     // Recieve data from Node and write it to a String
+    while (Serial.available() && toggleComplete == false) 
+    {
+      inChar = (char)Serial.read();
+      if(inChar == 'E')
+      { // end character for led
+        toggleComplete = true;
+      }
+      else
+      {
+        inputString += inChar; 
+      }
+    }
+    // Toggle LED 13
+    if(!Serial.available() && toggleComplete == true)
+    {
+      toggling();
+    }
+    int analogValue = analogRead(0);
+    analogValueAverage = 0.99*analogValueAverage + 0.01*analogValue;
+    float load = analogToLoad(analogValue) * 1000;
+    // Potmeter
+     sensorValue = analogRead(analogInPin);  
+
+    // read the analog in value:
+    if(prevValue != sensorValue)
+    {
+      Serial.print("B"); // begin character 
+      //Serial.print(Filloaster_State);
+      //Serial.print(".....");
+      //Serial.print(load); Not fully accurate 
+      Serial.print(sensorValue); 
+      Serial.print("E"); // end character
+      prevValue = sensorValue;
+    } 
+    delay(50); // give the Arduino some breathing room.
+  }
 }
 
 void toggling()
@@ -171,6 +211,8 @@ void loop(void) {
     delay(5000);
 }
 */
+
+
 
 
 
