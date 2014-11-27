@@ -6,7 +6,9 @@ SerialPort = require("serialport").SerialPort
 
 var socketServer;
 var serialPort;
-var portName = '/dev/cu.usbmodem1411'; 
+
+//var portName = '/dev/cu.usbmodem1411'; 
+//Comment portName when not using arduino
 //The portName the address of an arduino
 var sendData = "";
 
@@ -28,9 +30,38 @@ function startServer(route,handle,debug)
 		console.log("Listening at: http://localhost:1337");
 		console.log("Server is up");
 	}); 
-	serialListener(debug);
+
+	//serialListener(debug);
+	//Comment seriallistenre when not using arduino
+
 	initSocketIO(httpServer,debug);
 }
+
+
+function callTwilio()
+{
+    // Load the twilio module
+    var twilio = require('twilio');
+     
+    // Create a new REST API client to make authenticated requests against the
+    // twilio back end
+    var client = new twilio.RestClient('AC5afd49b367bd857f5e4e3647cab78d83', '1cf4be2b2f749a85d7c469b798ffdb5c');
+     
+    // Pass in parameters to the REST API using an object literal notation. The
+    // REST client will handle authentication and response serialzation for you.
+    client.sms.messages.create({
+        to:'+14125157367',
+        from:'(530) 924-0498',
+        body:'Stop Drinking BRO'
+    }, 
+
+    function sendMessage() {
+        console.log("message sent");
+    });
+}
+
+
+
 
 function initSocketIO(httpServer,debug)
 {
