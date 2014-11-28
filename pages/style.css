@@ -18,8 +18,23 @@ h1{
 	text-align:center;
 }
 #myCanvas {
-	border: 2px dashed grey;
+	border: 1px solid white;
+	position: fixed;
+	top: 100px;
+	left: 100px;
 }
+
+#myCanvasWrapper
+{
+	position: relative;
+	border-left: 100px solid white;
+	border-right: 100px solid white;
+	border-top: 500px solid transparent;
+	height: 1px;
+	width: 460px;
+	z-index: 10;
+}
+
 #btnHolder, #sliderTxt{
 	text-align:center;
 }	

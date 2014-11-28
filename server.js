@@ -11,11 +11,15 @@ var portName = '/dev/cu.usbmodem1411';
 //var portName = '/dev/cu.Bluetooth-Incoming-Port'; 
 //var portName = '/dev/cu.HC-05-DevB';
 //Comment portName when not using arduino
-//The portName the address of an arduino
+
 var sendData = "";
+var phoneData = ""; //will be in form +14125157367
+
+//Twilio Auth
+var twilio = require('twilio');
+var client = new twilio.RestClient('AC5afd49b367bd857f5e4e3647cab78d83', '1cf4be2b2f749a85d7c469b798ffdb5c');
 
 //Start server starts the server to run on.
-
 // handle contains locations to browse to (vote and poll); pathnames.
 function startServer(route,handle,debug)
 {
@@ -32,7 +36,6 @@ function startServer(route,handle,debug)
 		console.log("Listening at: http://localhost:1337");
 		console.log("Server is up");
 	}); 
-
 	serialListener(debug);
 	//Comment seriallistenre when not using arduino
 
@@ -40,17 +43,8 @@ function startServer(route,handle,debug)
 }
 
 
-function callTwilio()
+function welcomeTwilio(client)
 {
-    // Load the twilio module
-    var twilio = require('twilio');
-     
-    // Create a new REST API client to make authenticated requests against the
-    // twilio back end
-    var client = new twilio.RestClient('AC5afd49b367bd857f5e4e3647cab78d83', '1cf4be2b2f749a85d7c469b798ffdb5c');
-     
-    // Pass in parameters to the REST API using an object literal notation. The
-    // REST client will handle authentication and response serialzation for you.
     client.sms.messages.create({
         to:'+14125157367',
         from:'(530) 924-0498',
@@ -101,7 +95,18 @@ function serialListener(debug)
 		serialPort.on('data', function(data) 
 		{
 			receivedData += data.toString();
-						//Read NFC values
+
+			// Read the Phone Number
+			/*if (receivedData .indexOf('P') >= 0 && receivedData .indexOf('H') >= 0) 
+			{
+				phoneData = receivedData .substring(receivedData .indexOf('H') + 1, receivedData .indexOf('P'));
+				phoneData is in form "+14125157367"
+				receivedData = '';
+			}*/
+
+
+
+			//Read NFC values
 			if (receivedData .indexOf('N') >= 0 && receivedData .indexOf('C') >= 0) 
 			{
 				tagData = receivedData .substring(receivedData .indexOf('N') + 1, receivedData .indexOf('C'));

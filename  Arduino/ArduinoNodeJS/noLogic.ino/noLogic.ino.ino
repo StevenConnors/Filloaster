@@ -51,6 +51,7 @@ float totalAmountDrunk = 0;
 float refillThreshold = 0.5;
 
 boolean drinkDetermined = false;
+boolean phoneDetermined = false;
 
 void setup() {
   // initialize serial:
@@ -75,6 +76,12 @@ void loop()
   boolean success;
   uint8_t uid[] = { 0, 0, 0, 0, 0, 0, 0 };  // Buffer to store the returned UID
   uint8_t uidLength;                        // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
+  //Get the phone number here
+  //Use phoneDetermined as a boolean to loop.
+  //use the characters P H as end and beginning
+
+
+  //Get the type of drink
   if (!(drinkDetermined))
   {
   
@@ -102,8 +109,6 @@ void loop()
 
 
   if (drinkDetermined){
-
-
      // Recieve data from Node and write it to a String
     while (Serial.available() && toggleComplete == false) 
     {
