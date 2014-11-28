@@ -2,7 +2,11 @@
 <html>
 <head>  
 	<link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
+
 	<link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+
 	<script src="http://code.jquery.com/jquery-1.8.3.js"></script>
 	<script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
@@ -14,7 +18,7 @@
 	var poll1;
 	var text;
 	var potValue;
-	var prevPotValue;
+	var prevPotValue =0 ;
 	var toggleVal = 0;
 
 	var drink = "none";
@@ -27,21 +31,21 @@
 	function initSocketIO()
 	{
 		iosocket = io.connect();
-		iosocket.on('onconnection', function(value) 
+		iosocket.on('onconnection', function (value) 
 		{
 			pollOneH = value.pollOneValue/2; // recieve start poll value from server
 			initPoll();
 			initButton();
 			// recieve changed values by other client from server
-			iosocket.on('updateData', function (recievedData) 
+			iosocket.on('updateData', function (receivedData) 
 			{
-				pollOneH = recievedData.pollOneValue/2; // recieve start poll value from server
+				pollOneH = receivedData.pollOneValue/2; // recieve start poll value from server
 			});
 
-			/*iosocket.on('updateDrink', function(drinkData)
+			iosocket.on('updateDrink', function (receivedData)
 			{
-				drink = drinkData.drink;
-			});*/
+				drink = receivedData.drink;
+			});
 
 		});
 	}
@@ -65,8 +69,12 @@
 			x:poll1.w/2,
 			y:100
 		}
-		potValue = pollOneH*2;
-		prevPotValue = potValue;
+
+		if (typeof(potValue) == "number"){
+			potValue = pollOneH*2;
+			prevPotValue = potValue;
+		}
+
 		//start animation
 		animation(poll1,text);
 	}
@@ -90,15 +98,21 @@
 			potValue = pollOneH*3;
 		}
 
+
+		//Comment out Potmeter Value;
 		content.fillText('Potmeter value: ' + potValue, text.x, text.y);
-		content.fillText('Drink is: ' + potValue, text.x, text.y-40);
+		content.fillText('Drink is: ' + drink, text.x, text.y-40);
 
 
 		//Determines color
 		content.fillStyle = 'black';
-		if (potValue>500)
+		if (drink=="Water")
 		{
 			content.fillStyle = "blue";
+		}
+		else if (drink == "Coke")
+		{
+			content.fillStyle = "brown";
 		}
 
 		// render graph 
@@ -151,26 +165,36 @@
 	});
 	</script>
 
-
-<!-- Actual HTML -->
-
-
 </head>
+<!-- Actual HTML -->
 <body>
-	<div id="rData">
-		<h2>Data from Arduino</h2>
-		<canvas id="myCanvas" width="460" height="540"></canvas>
-	</div>
-	<div id="sData">
-		<h2>Data to Arduino</h2>
-		<div id="btnHolder">
-			<input type="checkbox" id="check" value="toggle"/><label for="check">Toggle LED</label>
-		</div>
-	</div> 
+	<nav role="navigation" class="navbar">
+	    <!-- Brand and toggle get grouped for better mobile display -->
+	    <div class="navbar-header">
+	        <button type="button" data-target="#navbarCollapse" data-toggle="collapse" class="navbar-toggle">
+	            <span class="sr-only">Toggle navigation</span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	        </button>
+	        <a href="main" class="navbar-brand"><img src="http://upload.wikimedia.org/wikipedia/en/9/9e/Thames_Water_logo.svg" style = "max-width:25px;"></a>
+	    </div>
+	    <!-- Collection of nav links and other content for toggling -->
+	    <div id="navbarCollapse" class="collapse navbar-collapse">
+	        <ul class="nav navbar-nav">
+	            <li class="active"><a href="dashboard">Dashboard</a></li>
+	            <li><a href="interface">Interface</a></li>
+	            <li><a href="restaurant">Restaurant</a></li>
+	        </ul>
+	        <ul class="nav navbar-nav navbar-right">
+	            <li><a href="main">Logout</a></li>
+	        </ul>
+	    </div>
+	</nav>
 
-	<div> 
-		<a href="dashboard"> Click me to jump to go back to dashboard </a>
-		<a href="main"> Click me to log out</a>
+	<div id="rData">
+		<h1>Data from Arduino</h1>
+		<canvas id="myCanvas" width="460" height="540"></canvas>
 	</div>
 
 </body>

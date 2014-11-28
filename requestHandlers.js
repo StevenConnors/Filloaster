@@ -48,8 +48,6 @@ function sendRestaurant(response) {
   response.end(html);
 }
 
-
-
 function sendCSS(response) {
   console.log("Request handler 'CSS' was called.");
   response.writeHead(200, {"Content-Type": "text/css"});

@@ -7,7 +7,9 @@ SerialPort = require("serialport").SerialPort
 var socketServer;
 var serialPort;
 
-//var portName = '/dev/cu.usbmodem1411'; 
+var portName = '/dev/cu.usbmodem1411'; 
+//var portName = '/dev/cu.Bluetooth-Incoming-Port'; 
+//var portName = '/dev/cu.HC-05-DevB';
 //Comment portName when not using arduino
 //The portName the address of an arduino
 var sendData = "";
@@ -31,7 +33,7 @@ function startServer(route,handle,debug)
 		console.log("Server is up");
 	}); 
 
-	//serialListener(debug);
+	serialListener(debug);
 	//Comment seriallistenre when not using arduino
 
 	initSocketIO(httpServer,debug);
@@ -52,9 +54,10 @@ function callTwilio()
     client.sms.messages.create({
         to:'+14125157367',
         from:'(530) 924-0498',
-        body:'Stop Drinking BRO'
+        body:"Welcome to 15-291. Please try our assortment of hardware such \
+        as google glass, androids, arduinos, and many more that will come out\
+        of our professor's pocket."
     }, 
-
     function sendMessage() {
         console.log("message sent");
     });
@@ -80,6 +83,7 @@ function initSocketIO(httpServer,debug)
 // Listen to serial port
 function serialListener(debug) 
 {
+	drinkSent = false;
 	var receivedData = "";
 	serialPort = new SerialPort(portName, 
 	{
@@ -97,31 +101,49 @@ function serialListener(debug)
 		serialPort.on('data', function(data) 
 		{
 			receivedData += data.toString();
+						//Read NFC values
+			if (receivedData .indexOf('N') >= 0 && receivedData .indexOf('C') >= 0) 
+			{
+				tagData = receivedData .substring(receivedData .indexOf('N') + 1, receivedData .indexOf('C'));
+				receivedData = '';
+				drinkData = setDrink(tagData);
+				console.log(tagData);
+				if ((drinkData!="") && (!drinkSent))
+				{
+					SocketIO_serialemitDrink(drinkData);
+					drinkSent = true;
+					console.log(drinkData);
+				}
+			}
+			// Read the sensor Values
 			if (receivedData .indexOf('E') >= 0 && receivedData .indexOf('B') >= 0) 
 			{
 				sendData = receivedData .substring(receivedData .indexOf('B') + 1, receivedData .indexOf('E'));
 				receivedData = '';
-			}
-			SocketIO_serialemit(sendData);
-
-			//Read NFC values
-			if (receivedData .indexOf('N') >= 0 && receivedData .indexOf('C') >= 0) 
-			{
-				drinkData = receivedData .substring(receivedData .indexOf('N') + 1, receivedData .indexOf('C'));
-				receivedData = '';
-				console.log(drinkData);
-				/*if (drinkData!="")
-				{
-					drink_is = drinkData;
-					SocketIO_serialemitDrink(drinkData);
-				}*/
+				SocketIO_serialemitValue(sendData);
 			}
 		});
 	});
 }
 
-function SocketIO_serialemit(sendData)
+function setDrink(tagData)
 {
+	if (tagData == "484F0A433D80") // the sticker
+	{
+		drinkData = "Water";
+	}
+	else if (tagData ==  "7413BBDF"){ //the big tag
+		drinkData = "Coke";
+	}
+	else if (tagData == "EA412B"){ //tag
+		drinkData = "Beer";
+	}
+	return drinkData;
+}
+
+function SocketIO_serialemitValue(sendData)
+{
+	console.log('Value:', sendData); 
 	socketServer.emit('updateData',{pollOneValue:sendData});
 }
 
