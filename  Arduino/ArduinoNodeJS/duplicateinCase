@@ -162,6 +162,7 @@ void loop()
       }
     }
   }
+  */
   // get the weight of the glass
   else if (Filloaster_State == 1)
   {

@@ -43,22 +43,17 @@ function startServer(route,handle,debug)
 }
 
 
-function welcomeTwilio(client)
+function welcomeTwilio(client, phoneNumber)
 {
     client.sms.messages.create({
-        to:'+14125157367',
+        to: phoneNumber,
         from:'(530) 924-0498',
-        body:"Welcome to 15-291. Please try our assortment of hardware such \
-        as google glass, androids, arduinos, and many more that will come out\
-        of our professor's pocket."
+        body:"Welcome to 15-291. Please try our assortment of hardware that is paid by our professors."
     }, 
     function sendMessage() {
         console.log("message sent");
     });
 }
-
-
-
 
 function initSocketIO(httpServer,debug)
 {
@@ -97,15 +92,15 @@ function serialListener(debug)
 			receivedData += data.toString();
 
 			// Read the Phone Number
-			/*if (receivedData .indexOf('P') >= 0 && receivedData .indexOf('H') >= 0) 
+			if (receivedData .indexOf('P') >= 0 && receivedData .indexOf('H') >= 0) 
 			{
-				phoneData = receivedData .substring(receivedData .indexOf('H') + 1, receivedData .indexOf('P'));
-				phoneData is in form "+14125157367"
+				console.log("Within Phone portion");
+				phoneData = receivedData .substring(receivedData .indexOf('P') + 1, receivedData .indexOf('H'));
 				receivedData = '';
-			}*/
-
-
-
+				phoneNumber = getPhoneNumber(phoneData);
+				welcomeTwilio(client, phoneNumber);
+				console.log(" Phone portion Done!");
+			}
 			//Read NFC values
 			if (receivedData .indexOf('N') >= 0 && receivedData .indexOf('C') >= 0) 
 			{
@@ -121,14 +116,34 @@ function serialListener(debug)
 				}
 			}
 			// Read the sensor Values
-			if (receivedData .indexOf('E') >= 0 && receivedData .indexOf('B') >= 0) 
+			if (receivedData .indexOf('B') >= 0 && receivedData .indexOf('E') >= 0) 
 			{
 				sendData = receivedData .substring(receivedData .indexOf('B') + 1, receivedData .indexOf('E'));
 				receivedData = '';
 				SocketIO_serialemitValue(sendData);
 			}
+			// Read the Filloaster State
+			/*if (receivedData .indexOf('S') >= 0 && receivedData .indexOf('T') >= 0) 
+			{
+				sendData = receivedData .substring(receivedData .indexOf('S') + 1, receivedData .indexOf('T'));
+				receivedData = '';
+				SocketIO_serialemitValue(sendData);
+			}*/
+
+
+
+
 		});
 	});
+}
+
+function getPhoneNumber(phoneData)
+{
+	if (phoneData == "4ADEFA433D80")
+	{
+		return '+14125157367';
+	}
+	return null;
 }
 
 function setDrink(tagData)
@@ -142,6 +157,10 @@ function setDrink(tagData)
 	}
 	else if (tagData == "EA412B"){ //tag
 		drinkData = "Beer";
+	}
+	else
+	{
+		drinkData = "";
 	}
 	return drinkData;
 }
@@ -167,3 +186,15 @@ function SocketIO_serialemitState(stateData)
 }
 
 exports.start = startServer;
+
+
+
+//Restaurant text Files
+
+
+
+
+
+
+
+

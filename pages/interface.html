@@ -33,13 +33,17 @@
 		iosocket = io.connect();
 		iosocket.on('onconnection', function (value) 
 		{
-			pollOneH = value.pollOneValue/2; // recieve start poll value from server
+			pollOneH = 0; // recieve start poll value from server
 			initPoll();
 			initButton();
 			// recieve changed values by other client from server
 			iosocket.on('updateData', function (receivedData) 
 			{
 				pollOneH = receivedData.pollOneValue/2; // recieve start poll value from server
+				if isNaN(pollOneH)
+				{
+					pollOneH = 0;
+				}
 			});
 
 			iosocket.on('updateDrink', function (receivedData)
@@ -100,7 +104,7 @@
 
 
 		//Comment out Potmeter Value;
-		content.fillText('Potmeter value: ' + potValue, text.x, text.y);
+		content.fillText('Potmeter value: ' + potValue, text.x, text.y); //poll1? 
 		content.fillText('Drink is: ' + drink, text.x, text.y-40);
 
 
