@@ -171,3 +171,81 @@ html,body{
   -webkit-animation-name: fadeInUp;
   animation-name: fadeInUp;
 }
+
+.ha-bg-parallax {
+
+	background: url(http://i.vimeocdn.com/video/443529180_640.jpg) 50% -195px no-repeat fixed;
+	opacity: 0.7;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	-webkit-background-size: cover;
+	background-size: cover;
+	height: 400px;
+	margin: 0 auto;
+	width: 100%;
+	display: table;
+	vertical-align: middle;
+	margin-top: 5px;
+
+}
+
+
+
+.ha-bg-parallax .ha-parallax-body {
+
+	display: table-cell;
+	vertical-align: middle;
+
+}
+
+
+
+.ha-bg-parallax .ha-content-whitecolor {
+
+	font-size: 17px;
+	color: #ffffff;
+	width: 45%;
+	margin: auto;
+
+}
+
+
+
+.ha-bg-parallax .ha-diamond-divider-md {
+
+    margin: 15px 0px;
+
+}
+
+
+
+.ha-bg-parallax .ha-heading-parallax {
+	font-family: "trebuchet ms";
+    font-style: italic;
+    font-weight: bold;
+    text-transform: none;
+    color: #ffffff;
+    padding-bottom: 0px;
+   	font-size: 52px;
+
+}
+
+.ha-bg-parallax .btn{
+	color:white;
+	background-color: transparent;
+	border-color: white;
+	border-width: 1px;
+	font-style: italic;
+	margin-top: 0px;
+	margin-left: 0px;
+}
+
+.ha-bg-parallax .ha-navbar{
+	font-style: italic;
+	font-family: "trebuchet ms";
+	margin-top: 15px;
+	margin-left: 40px;
+	font-size: 20px;
+	float:left;
+}
+
