@@ -27,7 +27,7 @@ int analogvalB = 220;
 float analogValueAverage = 0;
 
 //FSM for the system
-int Filloaster_State = 1;
+int Filloaster_State = 0;
 /*
 If 0, then nothing is on it.
 If 1, then glass is on it, get glass weight.
@@ -37,7 +37,7 @@ If 4, Then send signal to refill.
 */
 
 //FSM for NFCs
-int NFC_State = 3;
+int NFC_State = 2;
 /*
 If 0, then waiting for phone number
 If 1, then halting for diff NFC
@@ -58,12 +58,21 @@ float currentGlass = 0;
 int difference;
 int magicNum = 60;
 int numIterations = 50;
-
+boolean noGlass = false;
 
 //other constants
 float amountDrunk = 0;
 float totalAmountDrunk = 0;
 float refillThreshold = 0.5;
+
+//time Constants
+unsigned long StartTime = 0;
+unsigned long CurrentTime = 0;
+unsigned long ElapsedTime = 0;
+int leaveTime = 10;
+int userLeft = 0;
+
+
 
 void setup() {
   // initialize serial:
@@ -90,22 +99,23 @@ void loop()
     getPhoneNumber(success, uid, uidLength);
   }
   //Have a delay period
-  if (NFC_State == 1)
+  else if (NFC_State == 1)
   {
     delay(5000);
     NFC_State = 2;
   }
   //Get the type of drink
-  if (NFC_State == 2)
+  else if (NFC_State == 2)
   {
     getGlassType(success, uid, uidLength);
     Filloaster_State = 1;
   }
-  if (NFC_State == 3)
+  else if (NFC_State == 3)
   {
     senseorMeasurements();
-    delay(30); // give the Arduino some breathing room.
   }
+  delay(30); // give the Arduino some breathing room.
+
 }
 
 void getPhoneNumber(boolean success, uint8_t uid[], uint8_t uidLength){
@@ -124,7 +134,7 @@ void getPhoneNumber(boolean success, uint8_t uid[], uint8_t uidLength){
   else
   {
     // PN532 probably timed out waiting for a card
-    Serial.println("Timed out waiting for a card");
+    //Serial.println("404");
   }
 }
 
@@ -144,7 +154,7 @@ void getGlassType(boolean success, uint8_t uid[], uint8_t uidLength)
   }
   else
   {
-    Serial.println("Timed out waiting for a card");
+    //Serial.println("404");
   }
 }
 
@@ -238,21 +248,51 @@ void senseorMeasurements()
     }
     //Code to receive signal from webserver and to modify refillThreshold
     //Then jump to State 3
-  } 
+  }
 
-//
+  //In a separate section, check if the customer left by checking the value
+  //of load and comparing it to if filloaster empty or not. Use 10 seconds.
+  //Then send a message to the phone it was assigned to.
+  sensorValue = analogRead(analogInPin);  
+  checkDone(load);
+}
 
-  // Potmeter
-   sensorValue = analogRead(analogInPin);  
-  // read the analog in value:
-  if(prevValue != sensorValue)
-  {
-    Serial.print("B"); // begin character 
-    //Serial.print((int)load); Not fully accurate 
-    Serial.print(sensorValue); 
-    Serial.print("E"); // end character
-    prevValue = sensorValue;
-  } 
+
+void checkDone(float load){
+  /*filloaster state must be >=2
+  have a bool so that for the first time its 0, startTime.
+  Otherwize look at CurrentTime and Elapsed.
+  If not 0, then turn bool off. and Reset
+unsigned long StartTime = millis();
+
+unsigned long CurrentTime = millis();
+unsigned long ElapsedTime = CurrentTime - StartTime;
+  */
+  if (Filloaster_State == 1) return;
+  
+  //first time there no glass
+  if (!(noGlass)){
+    if (load < (glassConstant * noWeights)){
+      StartTime = millis();
+      noGlass = true;
+    }
+  }
+  //not first time
+  else{
+    CurrentTime = millis();
+    ElapsedTime = CurrentTime - StartTime;
+    if (ElapsedTime > leaveTime*1000)
+    {
+      userLeft = 1;
+      sendValues();
+    }
+    if (load >= (glassConstant * noWeights)){
+      StartTime = 0;
+      noGlass = false;
+      CurrentTime = 0;
+      ElapsedTime = 0;
+    }
+  }
 }
 
 //Converts AnalogValue to an actual weight.
@@ -266,23 +306,39 @@ float mapfloat(float x, float i_min, float in_max, float out_min, float out_max)
   return (x - i_min) * (out_max - out_min) / (in_max - i_min) + out_min;
 }
 
-
+//CHIJKMNOPQVWXYZ
 void sendValues(){
+  //state of filloaster
   Serial.print("S");
   Serial.print(Filloaster_State);
   Serial.print("D");
-
+  //amount in current glass
   Serial.print("G");      
   Serial.print(currentGlass); 
   Serial.print("L");
-
+  //amount in a "full glass"
   Serial.print("F");      
   Serial.print(fullGlass); 
   Serial.print("U");
-
+  //Total amount user drank
   Serial.print("T");      
   Serial.print(totalAmountDrunk); 
   Serial.print("A");
+  //User left or not
+  Serial.print("U");
+  Serial.print(userLeft);
+  Serial.print("R");
+
+  Serial.print("C");
+  Serial.print(ElapsedTime/1000); // in terms of seconds
+  Serial.print("H");
+
+  Serial.print("\n");
+// Value of Potmeter
+  Serial.print("B"); // begin character 
+  //Serial.print((int)load); Not fully accurate 
+  Serial.print(sensorValue); 
+  Serial.print("E"); // end character
 }
 
 void receivedSignalFromNode()
@@ -331,6 +387,18 @@ int stringToInt()
     int _recievedVal = atoi(charHolder);
     return _recievedVal;
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -14,6 +14,7 @@ var portName = '/dev/cu.usbmodem1411';
 
 var sendData = "";
 var phoneData = ""; //will be in form +14125157367
+var drinkData;
 
 //Twilio Auth
 var twilio = require('twilio');
@@ -21,6 +22,12 @@ var client = new twilio.RestClient('AC5afd49b367bd857f5e4e3647cab78d83', '1cf4be
 
 //total amount drank
 var totalDrank;
+var goodByeSent = false;
+
+//Drinking Application:
+var alcPercent = 0; //example 0.07
+var alcoholSuggestion = 48 //in mL
+
 
 //Start server starts the server to run on.
 // handle contains locations to browse to (vote and poll); pathnames.
@@ -40,7 +47,7 @@ function startServer(route,handle,debug)
 		console.log("Server is up");
 	}); 
 	serialListener(debug);
-	//Comment seriallistenre when not using arduino
+	//Comment seriallistener when not using arduino
 
 	initSocketIO(httpServer,debug);
 }
@@ -86,10 +93,10 @@ function serialListener(debug)
 			{
 				console.log("Within Phone portion");
 				phoneData = receivedData .substring(receivedData .indexOf('P') + 1, receivedData .indexOf('H'));
-				receivedData = '';
 				phoneNumber = getPhoneNumber(phoneData);
 				welcomeTwilio(client, phoneNumber);
-				console.log(" Phone portion Done!");
+				console.log("Phone portion Done!");
+				receivedData = '';
 			}
 			//Read NFC values
 			if (receivedData .indexOf('N') >= 0 && receivedData .indexOf('C') >= 0) 
@@ -97,12 +104,10 @@ function serialListener(debug)
 				tagData = receivedData .substring(receivedData .indexOf('N') + 1, receivedData .indexOf('C'));
 				receivedData = '';
 				drinkData = setDrink(tagData);
-				console.log(tagData);
 				if ((drinkData!="") && (!drinkSent))
 				{
 					SocketIO_serialemitDrink(drinkData);
 					drinkSent = true;
-					console.log(drinkData);
 				}
 			}
 			// Read the sensor Values
@@ -110,6 +115,7 @@ function serialListener(debug)
 			{
 				sendData = receivedData .substring(receivedData .indexOf('B') + 1, receivedData .indexOf('E'));
 				receivedData = '';
+				console.log(sendData);
 				SocketIO_serialemitValue(sendData);
 			}
 			// Read the Filloaster State
@@ -139,7 +145,19 @@ function serialListener(debug)
 			{
 				stateData = receivedData .substring(receivedData .indexOf('T') + 1, receivedData .indexOf('A'));
 				receivedData = '';
+
+				//Don't drink too much!
+				if (alcPercent * stateData > alcoholSuggestion){
+					alcoholWarningTwilio(client, phoneNumber, totalDrank);
+				}
 				SocketIO_serialemitTotalAmount(stateData);
+			}
+
+			if (receivedData .indexOf('C') >= 0 && receivedData .indexOf('H') >= 0) 
+			{
+				stateData = receivedData .substring(receivedData .indexOf('C') + 1, receivedData .indexOf('H'));
+				receivedData = '';
+				SocketIO_serialemitElapsedTime(stateData);
 			}
 
 			if (receivedData .indexOf('U') >= 0 && receivedData .indexOf('R') >= 0) 
@@ -148,7 +166,7 @@ function serialListener(debug)
 				receivedData = '';
 				//If user left, send message
 				if (stateData == "1"){
-					goodByeTwilio(client, phoneNumber, totalDrank);
+					goodByeTwilio(client, phoneNumber, totalDrank, drinkData);
 				}
 			}
 		});
@@ -172,27 +190,42 @@ function welcomeTwilio(client, phoneNumber)
         body:"Welcome to 15-291. Please try our assortment of hardware that is paid by our professors."
     }, 
     function sendMessage() {
-        console.log("message sent");
+        console.log("welcome message sent");
     });
 }
 
-function goodByeTwilio(client, phoneNumber, totalDrank)
+function goodByeTwilio(client, phoneNumber, totalDrank, drinkData)
 {
-	body1 = "Thank you for coming to 15-291. At your meal you drank ";
-	body2 = body1.concat(totalDrank);
-	body3 = "mL. We look forward to your next visit."
-	body = body2.concat(body3);
+	if (!(goodByeSent)){
+		body1 = "Thank you for coming to 15-291. At your meal you drank ";
+		body2 = "mL of ";
+		body3 = ". We look forward to your next visit.";
+		body = body1.concat(totalDrank,body2,drinkData,body3);
 
+	    client.sms.messages.create({
+	        to: phoneNumber,
+	        from:'(530) 924-0498',
+	        body:body
+	    }, 
+	    function sendMessage() {
+	        console.log("good bye message sent");
+	    });
+	    goodByeSent = true;
+	}
+}
+
+
+function alcoholWarningTwilio(client, phoneNumber, totalDrank)
+{
     client.sms.messages.create({
         to: phoneNumber,
         from:'(530) 924-0498',
-        body:body
+        body:"Please be careful in your alcohol consumption. Drinking and driving is prohibited."
     }, 
     function sendMessage() {
-        console.log("message sent");
+        console.log("alcohol warning message sent");
     });
 }
-
 
 function setDrink(tagData)
 {
@@ -200,11 +233,12 @@ function setDrink(tagData)
 	{
 		drinkData = "Water";
 	}
-	else if (tagData ==  "7413BBDF"){ //the big tag
-		drinkData = "Coke";
-	}
-	else if (tagData == "EA412B"){ //tag
+	//else if (tagData ==  "7413BBDF"){ //the big tag
+	//	drinkData = "Coke";
+	//}
+	else if (tagData == "7413BBDF"){ //tag
 		drinkData = "Beer";
+		alcPercent = 0.07;
 	}
 	else
 	{
@@ -242,6 +276,12 @@ function SocketIO_serialemitCurrentGlass(currentGlassData)
 {
 	//console.log("state: ",currentGlassData);
 	socketServer.emit('updateCurrentGlass', {currentGlass:currentGlassData});
+}
+
+function SocketIO_serialemitElapsedTime(elapsedData)
+{
+	//console.log("state: ",currentGlassData);
+	socketServer.emit('updateElapsedData', {elapsed:elapsedData});
 }
 
 function SocketIO_serialemitTotalAmount(totalAmountData)

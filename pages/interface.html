@@ -26,6 +26,7 @@
 
 	var fullGlass;
 	var currentGlass;
+	var elapsed;
 
 	window.onload = function() 
 	{
@@ -73,6 +74,12 @@
 			{
 				totalAmount = receivedData.totalAmount;
 				var totalAmount = document.getElementById("total").textContent = "Total: " + totalAmount;
+
+			});
+			iosocket.on('updateElapsedData', function (receivedData)
+			{
+				elapsed = receivedData.elapsed;
+				var elapsed = document.getElementById("elapsed").textContent = "Elapsed: " + elapsed;
 
 			});
 		});
@@ -127,8 +134,6 @@
 		}
 
 
-		//Comment out Potmeter Value;
-		content.fillText('Potmeter value: ' + potValue, text.x, text.y); //poll1? 
 		content.fillText('Drink is: ' + drink, text.x, text.y-40);
 		content.fillText('State is: ' + state, text.x, text.y-80);
 
@@ -219,6 +224,7 @@
 	<div id="full">Full:</div>
 	<div id="current">Current:</div>
 	<div id="total">Total:</div>
+	<div id="elapsed">Elapsed:</div>
 
 
 	<div id="rData">
