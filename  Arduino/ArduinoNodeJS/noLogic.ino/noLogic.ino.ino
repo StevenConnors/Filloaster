@@ -27,7 +27,7 @@ int analogvalB = 220;
 float analogValueAverage = 0;
 
 //FSM for the system
-int Filloaster_State = 0;
+int Filloaster_State = 1;
 /*
 If 0, then nothing is on it.
 If 1, then glass is on it, get glass weight.
@@ -37,7 +37,7 @@ If 4, Then send signal to refill.
 */
 
 //FSM for NFCs
-int NFC_State = 0;
+int NFC_State = 3;
 /*
 If 0, then waiting for phone number
 If 1, then halting for diff NFC
@@ -47,7 +47,7 @@ If 3, then not waiting.
 
 
 //Constants to measure liquid.
-float noWeights;
+float noWeights = 15;
 float glassWeight;
 int glassConstant = 3; //magic number
 float calibWeight = 0;
@@ -55,6 +55,9 @@ int calibCount = 0;
 float sumOfCalibLoads = 0;
 float fullGlass;
 float currentGlass = 0;
+int difference;
+int numIterations = 50;
+
 
 //other constants
 float amountDrunk = 0;
@@ -95,11 +98,12 @@ void loop()
   if (NFC_State == 2)
   {
     getGlassType(success, uid, uidLength);
+    Filloaster_State = 1;
   }
   if (NFC_State == 3)
   {
     senseorMeasurements();
-    delay(50); // give the Arduino some breathing room.
+    delay(30); // give the Arduino some breathing room.
   }
 }
 
@@ -150,12 +154,100 @@ void senseorMeasurements()
   //Convert analog value to load (in mL)
   int analogValue = analogRead(0);
   analogValueAverage = 0.99*analogValueAverage + 0.01*analogValue;
-  float load = analogToLoad(analogValue) * 1000;
+  //float load = analogToLoad(analogValue) * 1000;
+  float load = analogValue;
+//
+  //Load is in mL
+  Serial.print("S");
+  Serial.print(Filloaster_State);
+  Serial.print("D");
+
+  // get the weight of the glass
+  if (Filloaster_State == 1)
+  {
+    if (load > (glassConstant * noWeights))
+    {
+      glassWeight = load;
+      Filloaster_State = 2;
+    }
+  }
+  //get weight of water and glass
+  else if (Filloaster_State == 2)
+  {
+    difference = 25;
+    if (calibWeight - difference < load < calibWeight + difference) //magic number
+    {
+      calibCount++;
+      sumOfCalibLoads = sumOfCalibLoads + load;
+    }
+    else
+    {
+      calibCount = 0;
+      sumOfCalibLoads = 0;
+    }
+    //The value has been constant for 10 iterations
+    if (calibCount == numIterations)
+    {
+      fullGlass = sumOfCalibLoads / numIterations;
+      currentGlass = fullGlass;
+      Filloaster_State = 3;
+      calibCount = 0;
+      sumOfCalibLoads = 0;
+    }
+    calibWeight = load;
+  }
+  //Glass is full now, now we measure amount in cup
+  else if (Filloaster_State == 3)
+  {
+    if (load > currentGlass + difference) //magic number
+    {
+      totalAmountDrunk = totalAmountDrunk + amountDrunk;
+      amountDrunk = 0;
+      Filloaster_State = 2;
+    }
+    // make sure that we don't take the case when person is drinking
+    if (!(load < glassWeight)) //means not currently drinking: cup is not in air
+    {
+      //////////////////////////////////////////////////////////////////////////////Check HERE
+      currentGlass = load;
+      amountDrunk = fullGlass - currentGlass;
   
+      Serial.print("G");      
+      Serial.print(currentGlass); 
+      Serial.print("L");
 
+      Serial.print("F");      
+      Serial.print(fullGlass); 
+      Serial.print("U");
 
+      if (currentGlass < refillThreshold * fullGlass)
+      {
+        //Send signal to webserver to refill.
+        Filloaster_State = 4;
+      }
+    }
+  }
+  // sent signal to waiter and waiting for response
+  else if (Filloaster_State == 4)
+  {
+    //Code when the waiter refills it.
+    //I should look over here. What if waiter picks glass up.
+    if (load > currentGlass + 60) //magic number
+    {
+      totalAmountDrunk = totalAmountDrunk + amountDrunk;
+      amountDrunk = 0;
+      Filloaster_State = 2;
+    }    
+    if (!(load < glassWeight)) //means not currently drinking: cup is not in air
+    {
+      currentGlass = load;
+      amountDrunk = fullGlass - currentGlass;
+    }
+    //Code to receive signal from webserver and to modify refillThreshold
+    //Then jump to State 3
+  } 
 
-
+//
 
   // Potmeter
    sensorValue = analogRead(analogInPin);  
@@ -167,7 +259,6 @@ void senseorMeasurements()
     Serial.print(sensorValue); 
     Serial.print("E"); // end character
     prevValue = sensorValue;
-    Serial.print("\n");
   } 
 }
 
@@ -228,6 +319,7 @@ int stringToInt()
     int _recievedVal = atoi(charHolder);
     return _recievedVal;
 }
+
 
 
 

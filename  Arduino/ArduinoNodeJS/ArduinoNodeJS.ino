@@ -61,24 +61,6 @@ void setup() {
 
 void loop() 
 {
-   // Recieve data from Node and write it to a String
-   while (Serial.available() && toggleComplete == false) 
-   {
-    inChar = (char)Serial.read();
-    if(inChar == 'E')
-    { // end character for led
-     toggleComplete = true;
-    }
-    else
-    {
-      inputString += inChar; 
-    }
-  }
-  // Toggle LED 13
-  if(!Serial.available() && toggleComplete == true)
-  {
-    toggling();
-  }
   int analogValue = analogRead(0);
   analogValueAverage = 0.99*analogValueAverage + 0.01*analogValue;
   float load = analogToLoad(analogValue) * 1000;
@@ -86,90 +68,13 @@ void loop()
   Serial.print("S");
   Serial.print(Filloaster_State);
   Serial.print("D");
-  //Value without anything
-  /*if (Filloaster_State == 0)
-  {
-    if ((10 < analogValueAverage) || (analogValueAverage < 20)) //magic number
-    {
-        ///////////////////////////////////////////////////////////////////////////////////////////
-      if (Filloaster_State == 0 || Filloaster_State == 1 || Filloaster_State == 2)
-      {
-        Serial.println("Waiting for message from Peer");
-        int msgSize = nfc.read(ndefBuf, sizeof(ndefBuf));
-        if (msgSize > 0) 
-        {
-            NdefMessage msg  = NdefMessage(ndefBuf, msgSize);
-            //msg.print();
-                
-            NdefRecord record = msg.getRecord(0);
 
-            int payloadLength = record.getPayloadLength();
-            byte payload[payloadLength];
-            record.getPayload(payload);        
-            
-            // The TNF and Type are used to determine how your application processes the payload
-            // There's no generic processing for the payload, it's returned as a byte[]
-            int startChar = 0;        
-            if (record.getTnf() == TNF_WELL_KNOWN && record.getType() == "T") 
-            { // text message
-              // skip the language code
-              startChar = payload[0] + 1;
-            } 
-            else if (record.getTnf() == TNF_WELL_KNOWN && record.getType() == "U") 
-            { // URI
-              // skip the url prefix (future versions should decode)
-              startChar = 1;
-            }
-            // Force the data into a String (might fail for some content)
-            // Real code should use smarter processing
-            String payloadAsString = "";
-            for (int c = startChar; c < payloadLength; c++) 
-            {
-              payloadAsString += (char)payload[c];
-            }
-            Serial.println(payloadAsString);
-            
-            //if these strings are equal then change drinks, or color
-            Serial.print("N");
-            if (payloadAsString == "speech.cs.cmu.edu/coinlab/")
-            {
-              Serial.println("Coke!");
-              noWeights = load;
-              Filloaster_State = 1;            
-            }
-            else if (payloadAsString == "cs.cmu.edu/~anatoleg/")
-            {
-              Serial.println("Lemonade");
-              noWeights = load;
-              Filloaster_State = 1;              
-            }
-            else if (payloadAsString == "cs.cmu.edu/~awb/")
-            {
-              Serial.println("Water");
-              noWeights = load;
-              Filloaster_State = 1;
-            }
-            else if (payloadAsString == "cs.cmu.edu/")
-            {
-              Serial.println("Russian Water");
-              noWeights = load;
-              Filloaster_State = 1;
-            }
-            Serial.print("C");
-
-            Serial.println("\nSuccess");
-        }  
-      }
-    }
-  }
   // get the weight of the glass
   else if (Filloaster_State == 1)
   {
     if (load > (glassConstant * noWeights))
     {
       glassWeight = load;
-      //Have the NFC code to read the tag on the glass which identifies the 
-      //Drink
       Filloaster_State = 2;
     }
   }
@@ -236,6 +141,23 @@ void loop()
     //Then jump to State 3
   } 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   // Potmeter
    sensorValue = analogRead(analogInPin);  
 
@@ -253,21 +175,16 @@ void loop()
   delay(50); // give the Arduino some breathing room.
 }
 
-void toggling()
-{
-  // convert String to int. 
-  int recievedVal = stringToInt();
-  
-  if(recievedVal == 0)
-  {
-    digitalWrite(ledPin,recievedVal);
-  }
-  else if(recievedVal == 1)
-  {
-    digitalWrite(ledPin,recievedVal);
-  }    
-  toggleComplete = false;
-}
+
+
+
+
+
+
+
+
+
+
 
 int stringToInt()
 {
@@ -277,7 +194,6 @@ int stringToInt()
     int _recievedVal = atoi(charHolder);
     return _recievedVal;
 }
-
 
 //Converts AnalogValue to an actual weight.
 float analogToLoad(float analogval){
@@ -289,40 +205,3 @@ float mapfloat(float x, float in_min, float in_max, float out_min, float out_max
 {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
-
-
-
-
-
-
-/*
-The ReadTag sketch uses I2C interface by default, change code to use SPI as following.
-#include <SPI.h>
-#include "PN532_SPI.h"
-#include "PN532.h"
-#include "NfcAdapter.h"
- 
-PN532_SPI interface(SPI, 10);
-NfcAdapter nfc = NfcAdapter(interface);
- 
-void setup(void) {
-    Serial.begin(115200);
-    Serial.println("NDEF Reader");
-    nfc.begin();
-}
- 
-void loop(void) {
-    Serial.println("\nScan a NFC tag\n");
-    if (nfc.tagPresent())
-    {
-        NfcTag tag = nfc.read();
-        tag.print();
-    }
-    delay(5000);
-}
-*/
-
-
-
-
-

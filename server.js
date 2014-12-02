@@ -116,23 +116,34 @@ function serialListener(debug)
 				}
 			}
 			// Read the sensor Values
-			if (receivedData .indexOf('B') >= 0 && receivedData .indexOf('E') >= 0) 
+			if ( (receivedData .indexOf('E') >= 0) && (receivedData .indexOf('B') >= 0) && (receivedData .indexOf('E')>receivedData .indexOf('B')) ) 
 			{
 				sendData = receivedData .substring(receivedData .indexOf('B') + 1, receivedData .indexOf('E'));
 				receivedData = '';
 				SocketIO_serialemitValue(sendData);
 			}
 			// Read the Filloaster State
-			/*if (receivedData .indexOf('S') >= 0 && receivedData .indexOf('T') >= 0) 
+			if (receivedData .indexOf('S') >= 0 && receivedData .indexOf('D') >= 0) 
 			{
-				sendData = receivedData .substring(receivedData .indexOf('S') + 1, receivedData .indexOf('T'));
+				stateData = receivedData .substring(receivedData .indexOf('S') + 1, receivedData .indexOf('D'));
 				receivedData = '';
-				SocketIO_serialemitValue(sendData);
-			}*/
+				SocketIO_serialemitState(stateData);
+			}
 
+			if (receivedData .indexOf('F') >= 0 && receivedData .indexOf('U') >= 0) 
+			{
+				stateData = receivedData .substring(receivedData .indexOf('F') + 1, receivedData .indexOf('U'));
+				receivedData = '';
+				SocketIO_serialemitFullGlass(stateData);
 
+			}
 
-
+			if (receivedData .indexOf('G') >= 0 && receivedData .indexOf('L') >= 0) 
+			{
+				stateData = receivedData .substring(receivedData .indexOf('G') + 1, receivedData .indexOf('L'));
+				receivedData = '';
+				SocketIO_serialemitCurrentGlass(stateData);
+			}
 		});
 	});
 }
@@ -176,13 +187,24 @@ function SocketIO_serialemitDrink(drinkData)
 	//Information about drink is passed here//
 	console.log("Drink: ",drinkData);
 	socketServer.emit('updateDrink',{drink:drinkData});
-	  //socketServer.emit('update', sendData);
 }
 
 function SocketIO_serialemitState(stateData)
 {
-	console.log("state: ",stateData);
-	  //socketServer.emit('update', sendData);
+	//console.log("state: ",stateData);
+	socketServer.emit('updateState', {state:stateData});
+}
+
+function SocketIO_serialemitFullGlass(fullGlassData)
+{
+	//console.log("state: ",fullGlassData);
+	socketServer.emit('updateFullGlass', {fullGlass:fullGlassData});
+}
+
+function SocketIO_serialemitCurrentGlass(currentGlassData)
+{
+	//console.log("state: ",currentGlassData);
+	socketServer.emit('updateCurrentGlass', {currentGlass:currentGlassData});
 }
 
 exports.start = startServer;

@@ -22,6 +22,10 @@
 	var toggleVal = 0;
 
 	var drink = "none";
+	var state = 0;
+
+	var fullGlass;
+	var currentGlass;
 
 	window.onload = function() 
 	{
@@ -34,23 +38,37 @@
 		iosocket.on('onconnection', function (value) 
 		{
 			pollOneH = 0; // recieve start poll value from server
+			state = 0;
 			initPoll();
 			initButton();
 			// recieve changed values by other client from server
 			iosocket.on('updateData', function (receivedData) 
 			{
 				pollOneH = receivedData.pollOneValue/2; // recieve start poll value from server
-				if isNaN(pollOneH)
-				{
+				nan = isNaN(pollOneH)
+				if (nan){
 					pollOneH = 0;
 				}
 			});
-
 			iosocket.on('updateDrink', function (receivedData)
 			{
 				drink = receivedData.drink;
 			});
+			iosocket.on('updateState', function (receivedData)
+			{
+				state = receivedData.state;
+			});
+			iosocket.on('updateFullGlass', function (receivedData)
+			{
+				fullGlass = receivedData.fullGlass;
+				var full = document.getElementById("full").textContent = "Full: "+ fullGlass;
+			});			
+			iosocket.on('updateCurrentGlass', function (receivedData)
+			{
+				currentGlass = receivedData.currentGlass;
+				var current = document.getElementById("current").textContent = "Current: " + currentGlass;
 
+			});		
 		});
 	}
 
@@ -106,6 +124,7 @@
 		//Comment out Potmeter Value;
 		content.fillText('Potmeter value: ' + potValue, text.x, text.y); //poll1? 
 		content.fillText('Drink is: ' + drink, text.x, text.y-40);
+		content.fillText('State is: ' + state, text.x, text.y-80);
 
 
 		//Determines color
@@ -138,7 +157,6 @@
 			animation(poll1,text);
 		});
 	}
-	
 
 	// canvas request for all browsers
 	window.requestAnimFrame = (function(callback) 
@@ -153,10 +171,6 @@
 		  window.setTimeout(callback, 1000 / 30); // 30 frames per second
 		};
 	})();
-
-
-
-
 
 	$(document).ready(function() 
 	{
@@ -196,15 +210,15 @@
 	    </div>
 	</nav>
 
+	<div id="full">Full:</div>
+	<div id="current">Current:</div>
 
 
 	<div id="rData">
 		<h1>Data from Arduino</h1>
 		<div></div>
 		<canvas id="myCanvas" width="460" height="540"></canvas>
-		<div id="myCanvasWrapper">		</div>
-
+		<div id="myCanvasWrapper"></div>
 	</div>
-
 </body>
 </html>
