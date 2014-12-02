@@ -16,106 +16,72 @@
     
     <style type="text/css">
     h2{
-        margin: 0;     
-        color: #E7F9FF ;
-        padding-top: 90px;
-        font-size: 52px;
-        font-family: "trebuchet ms", sans-serif;    
+        font-family: "trebuchet ms";
+        font-size: 60px;
+        font-style: italic;
+        color:black;  
     }
-    .item{
-        background: #9BE7FC;   
-        text-align: center;
-        width: 100%;
-        height: 400px !important;
-    }
-    .carousel{
-        margin-top: 0px;
-    }
-    .bs-example{
-        margin: 0;
-    }
-    .btn{
-    	margin: 10px;
-    	font-family: "trebuchet ms", sans-serif;
-    	background-color: "white";
-    }
-    .navbar{
-        margin-bottom: 0;
+    body{
+        background: white;
     }
     
     </style>
 </head>
 
 <body>
-<nav role="navigation" class="navbar">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-        <button type="button" data-target="#navbarCollapse" data-toggle="collapse" class="navbar-toggle">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-        </button>
-        <a href="#" class="navbar-brand"><img src="http://upload.wikimedia.org/wikipedia/en/9/9e/Thames_Water_logo.svg" style = "max-width:25px;"></a>
-    </div>
-    <!-- Collection of nav links and other content for toggling -->
-    <div id="navbarCollapse" class="collapse navbar-collapse">
-        <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
-            <li><a href="#">Profile</a></li>
-            <li><a href="#">Messages</a></li>
-        </ul>
-        <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Login</a></li>
-        </ul>
-    </div>
-</nav>
-<div class="bs-example">
-    <div id="myCarousel" class="carousel slide" data-interval="4000" data-ride="carousel">
-        <!-- Carousel indicators -->
-        <ol class="carousel-indicators">
-            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-            <li data-target="#myCarousel" data-slide-to="1"></li>
-            <li data-target="#myCarousel" data-slide-to="2"></li>
-        </ol>   
-        <!-- Carousel items -->
-        <div class="carousel-inner">
-            <div class="active item">
+<div class="container-fluid">
+	<!-- parallax image scrolling -->
+    <div>
+      </div>
+            
+            <div class="ha-bg-parallax text-center block-marginb-none" data-type="background" data-speed="20">
+            <div class = "ha-navbar"> 
+                <a href = "/Users/13achang/Desktop/bootstrap/index.html"><span style = "color: white; margin-right:50px; "> Home </span></a>
+                <a href = "/Users/13achang/Desktop/bootstrap/index.html"><span style = "color: white; "> About </span></a>
 
-                <div class = "carousel-img center-block">
-                    <img src = "http://i.huffpost.com/gen/1860407/thumbs/o-BLACK-FOOTED-CAT-KITTENS-facebook.jpg" style = "max-height:400px; opacity:0.5;"/> </a>
-                </div>
-                <h2>Slide 1</h2>
-                <div class="carousel-caption">
-                    <h2>First slide label</h2>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                   <a href = "/Users/13achang/Desktop/bootstrap/signin2.html"><span style = "color: #9BE7FC " class="btn btn-default btn-lg "> Sign in </span></a>
-                </div>
             </div>
-            <div class="item">
-                <h2>Slide 2</h2>
-                <div class="carousel-caption">
-                  <h3>Second slide label</h3>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                </div>
+            
+            <div class="ha-parallax-body">
+
+
+            <div class="ha-content ha-content-whitecolor">
             </div>
-            <div class="item">
-                <h2>Slide 3</h2>
-                <div class="carousel-caption">
-                  <h3>Third slide label</h3>
-                  <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
-                </div>
+
+
+            <div class="ha-parallax-divider-wrapper">
+
+                <span class="ha-diamond-divider-md img-responsive"></span>
+
             </div>
+            <div class="ha-heading-parallax">Filloaster</div>
+            <a href = "/Users/13achang/Desktop/bootstrap/signin2.html"><span style = "color: white; " class=" btn"> Sign in </span></a>
+
         </div>
-        <!-- Carousel nav -->
-        <a class="carousel-control left" href="#myCarousel" data-slide="prev">
-            <span class="glyphicon glyphicon-chevron-left"></span>
-        </a>
-        <a class="carousel-control right" href="#myCarousel" data-slide="next">
-            <span class="glyphicon glyphicon-chevron-right"></span>
-        </a>
+
     </div>
-</div>
+    
+    
+	<!-- content --> 
+    <div class = "container-flulid">
+        <div class="row" style="margin-left:15px; margin-right:15px;">
+        <div class="col-xs-4">
+            <h2>HTML</h2>
+            <p>HTML is a markup language that is used for creating web pages. The HTML tutorial section will help you understand the basics of HTML, so that you can create your own web pages or website.</p>
+        </div>
+        <div class="col-xs-4">
+            <h2>CSS</h2>
+            <p>CSS is used for describing the presentation of web pages. The CSS tutorial section will help you learn the essentials of CSS, so that you can fine control the style and layout of your HTML document.</p>
+        </div>
+        <div class="col-xs-4">
+            <h2>Bootstrap</h2>
+            <p>Bootstrap is a powerful front-end framework for faster and easier web development. The Bootstrap tutorial section will help you learn the techniques of Bootstrap so that you can quickly create your own website.</p>
+        </div>
+    </div>
+        <div class = "row">
+            <div class = "col-lg-2">
+                <img src = "img/prototype1.jpg" style = "width:200px; heiht:200px; margin-left: 30px; opacity:0.7; border-radius:5px;"/>
+            </div>
+    </div>
 
 
 <!-- javascript -->
