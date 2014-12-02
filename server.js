@@ -19,6 +19,9 @@ var phoneData = ""; //will be in form +14125157367
 var twilio = require('twilio');
 var client = new twilio.RestClient('AC5afd49b367bd857f5e4e3647cab78d83', '1cf4be2b2f749a85d7c469b798ffdb5c');
 
+//total amount drank
+var totalDrank;
+
 //Start server starts the server to run on.
 // handle contains locations to browse to (vote and poll); pathnames.
 function startServer(route,handle,debug)
@@ -40,19 +43,6 @@ function startServer(route,handle,debug)
 	//Comment seriallistenre when not using arduino
 
 	initSocketIO(httpServer,debug);
-}
-
-
-function welcomeTwilio(client, phoneNumber)
-{
-    client.sms.messages.create({
-        to: phoneNumber,
-        from:'(530) 924-0498',
-        body:"Welcome to 15-291. Please try our assortment of hardware that is paid by our professors."
-    }, 
-    function sendMessage() {
-        console.log("message sent");
-    });
 }
 
 function initSocketIO(httpServer,debug)
@@ -144,6 +134,23 @@ function serialListener(debug)
 				receivedData = '';
 				SocketIO_serialemitCurrentGlass(stateData);
 			}
+
+			if (receivedData .indexOf('T') >= 0 && receivedData .indexOf('A') >= 0) 
+			{
+				stateData = receivedData .substring(receivedData .indexOf('T') + 1, receivedData .indexOf('A'));
+				receivedData = '';
+				SocketIO_serialemitTotalAmount(stateData);
+			}
+
+			if (receivedData .indexOf('U') >= 0 && receivedData .indexOf('R') >= 0) 
+			{
+				stateData = receivedData .substring(receivedData .indexOf('U') + 1, receivedData .indexOf('R'));
+				receivedData = '';
+				//If user left, send message
+				if (stateData == "1"){
+					goodByeTwilio(client, phoneNumber, totalDrank);
+				}
+			}
 		});
 	});
 }
@@ -156,6 +163,36 @@ function getPhoneNumber(phoneData)
 	}
 	return null;
 }
+
+function welcomeTwilio(client, phoneNumber)
+{
+    client.sms.messages.create({
+        to: phoneNumber,
+        from:'(530) 924-0498',
+        body:"Welcome to 15-291. Please try our assortment of hardware that is paid by our professors."
+    }, 
+    function sendMessage() {
+        console.log("message sent");
+    });
+}
+
+function goodByeTwilio(client, phoneNumber, totalDrank)
+{
+	body1 = "Thank you for coming to 15-291. At your meal you drank ";
+	body2 = body1.concat(totalDrank);
+	body3 = "mL. We look forward to your next visit."
+	body = body2.concat(body3);
+
+    client.sms.messages.create({
+        to: phoneNumber,
+        from:'(530) 924-0498',
+        body:body
+    }, 
+    function sendMessage() {
+        console.log("message sent");
+    });
+}
+
 
 function setDrink(tagData)
 {
@@ -207,16 +244,13 @@ function SocketIO_serialemitCurrentGlass(currentGlassData)
 	socketServer.emit('updateCurrentGlass', {currentGlass:currentGlassData});
 }
 
+function SocketIO_serialemitTotalAmount(totalAmountData)
+{
+	//console.log("state: ",currentGlassData);
+	totalDrank = totalAmountData;
+	socketServer.emit('updateTotalAmount', {totalAmount:totalAmountData});
+}
+
 exports.start = startServer;
 
-
-
 //Restaurant text Files
-
-
-
-
-
-
-
-

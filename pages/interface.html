@@ -69,6 +69,12 @@
 				var current = document.getElementById("current").textContent = "Current: " + currentGlass;
 
 			});		
+			iosocket.on('updateTotalAmount', function (receivedData)
+			{
+				totalAmount = receivedData.totalAmount;
+				var totalAmount = document.getElementById("total").textContent = "Total: " + totalAmount;
+
+			});
 		});
 	}
 
@@ -212,6 +218,7 @@
 
 	<div id="full">Full:</div>
 	<div id="current">Current:</div>
+	<div id="total">Total:</div>
 
 
 	<div id="rData">

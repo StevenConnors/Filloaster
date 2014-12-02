@@ -1,8 +1,15 @@
 <!DOCTYPE HTML>
 <html>
 <head>  
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
 
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Website</title>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
     <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
@@ -10,8 +17,14 @@
     <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
     <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script>
-    
+
+    <style type = "text/css">
+        body
+        {
+                background: white;
+        }
+    </style>
+    <script type="text/javascript">
     //Global Variables
     var iosocket;
     var state;
@@ -31,20 +44,15 @@
                 state = receivedData.state;
                 //console.log(typeof("4"));
                 if (state == "4"){
-                    document.getElementById("test").style.color = "red";
+                    document.getElementById("test").style.backgroundColor = "red";
                 }
                 else{
-                    document.getElementById("test").style.color = "green";
+                    document.getElementById("test").style.backgroundColor = "green";
                 }
             });
         });
     }
-
-
-
-
-
-</script>
+    </script>
 </head>
 
 <body>
@@ -72,11 +80,96 @@
     </div>
 </nav>
 
-	<a href="main">Press here to logout</a>
-	<div> This is your restaurant page. We'll add more css later!</div>
-	<a href="dashboard">Press here to go back to Dashboard</a>
-
-    <h2 id="test">I'll change </h2>
+<div id= "container-fluid">
+    <div class = "row">
+        <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div class = "chair"></div>
+        </div>
+        <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div class = "box"></div>
+        </div>
+         <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div class = "chair"></div>
+        </div>
+        <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div class = "chair"></div>
+        </div>
+        <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div class = "box"></div>
+        </div>
+         <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div class = "chair"></div>
+        </div>
+        <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div class = "chair"></div>
+        </div>
+        <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div class = "box"></div>
+        </div>
+        <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div class = "chair"></div>
+        </div>
+    </div>
+    <div class = "row">
+        <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div class = "chair"></div>
+        </div>
+        <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div class = "box"></div>
+        </div>
+         <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div class = "chair"></div>
+        </div>
+        <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div class = "chair"></div>
+        </div>
+        <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div class = "box"></div>
+        </div>
+         <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div id="test" class = "chair"></div>
+        </div>
+        <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div class = "chair"></div>
+        </div>
+        <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div class = "box"></div>
+        </div>
+        <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div class = "chair"></div>
+        </div>
+    </div>
+    <div class = "row">
+        <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div class = "chair"></div>
+        </div>
+        <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div class = "box"></div>
+        </div>
+         <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div class = "chair"></div>
+        </div>
+        <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div class = "chair"></div>
+        </div>
+        <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div class = "box"></div>
+        </div>
+         <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div class = "chair"></div>
+        </div>
+        <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div class = "chair"></div>
+        </div>
+        <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div class = "box"></div>
+        </div>
+        <div class = "col-md-1 col-sm-6 col-xs-4">
+            <div class = "chair"></div>
+        </div>
+    </div>
+       
+</div>
 
 </body>
 </html>

@@ -58,12 +58,21 @@ float currentGlass = 0;
 int difference;
 int magicNum = 60;
 int numIterations = 50;
-
+boolean noGlass = false;
 
 //other constants
 float amountDrunk = 0;
 float totalAmountDrunk = 0;
 float refillThreshold = 0.5;
+
+//time Constants
+unsigned long StartTime;
+unsigned long CurrentTime;
+unsigned long ElapsedTime;
+int leaveTime = 10;
+int userLeft = 0;
+
+
 
 void setup() {
   // initialize serial:
@@ -238,21 +247,46 @@ void senseorMeasurements()
     }
     //Code to receive signal from webserver and to modify refillThreshold
     //Then jump to State 3
-  } 
+  }
 
-//
+  //In a separate section, check if the customer left by checking the value
+  //of load and comparing it to if filloaster empty or not. Use 10 seconds.
+  //Then send a message to the phone it was assigned to.
 
-  // Potmeter
-   sensorValue = analogRead(analogInPin);  
-  // read the analog in value:
-  if(prevValue != sensorValue)
-  {
-    Serial.print("B"); // begin character 
-    //Serial.print((int)load); Not fully accurate 
-    Serial.print(sensorValue); 
-    Serial.print("E"); // end character
-    prevValue = sensorValue;
-  } 
+  checkDone(load);
+}
+
+
+void checkDone(float load){
+  /*filloaster state must be >=2
+  have a bool so that for the first time its 0, startTime.
+  Otherwize look at CurrentTime and Elapsed.
+  If not 0, then turn bool off. and Reset
+unsigned long StartTime = millis();
+
+unsigned long CurrentTime = millis();
+unsigned long ElapsedTime = CurrentTime - StartTime;
+  */
+  if (Filloaster_State == 1) return;
+  
+  //first time there no glass
+  if (!(noGlass)){
+    if (load < (glassConstant * noWeights)){
+      StartTime = millis();
+      noGlass = true;
+    }
+  }
+  //not first time
+  else{
+    CurrentTime = millis();
+    ElapsedTime = CurrentTime - StartTime;
+    if (ElapsedTime > leaveTime)
+    {
+      userLeft = 1;
+      sendValues();
+      //maybe do while1 here?
+    }
+  }
 }
 
 //Converts AnalogValue to an actual weight.
@@ -268,21 +302,37 @@ float mapfloat(float x, float i_min, float in_max, float out_min, float out_max)
 
 
 void sendValues(){
+  //state of filloaster
   Serial.print("S");
   Serial.print(Filloaster_State);
   Serial.print("D");
-
+  //amount in current glass
   Serial.print("G");      
   Serial.print(currentGlass); 
   Serial.print("L");
-
+  //amount in a "full glass"
   Serial.print("F");      
   Serial.print(fullGlass); 
   Serial.print("U");
-
+  //Total amount user drank
   Serial.print("T");      
   Serial.print(totalAmountDrunk); 
   Serial.print("A");
+  //User left or not
+  Serial.print("U");
+  Serial.print(userLeft);
+  Serial.print("R");
+
+  // Value of Potmeter
+  sensorValue = analogRead(analogInPin);  
+  if(prevValue != sensorValue)
+  {
+    Serial.print("B"); // begin character 
+    //Serial.print((int)load); Not fully accurate 
+    Serial.print(sensorValue); 
+    Serial.print("E"); // end character
+    prevValue = sensorValue;
+  } 
 }
 
 void receivedSignalFromNode()
@@ -331,6 +381,7 @@ int stringToInt()
     int _recievedVal = atoi(charHolder);
     return _recievedVal;
 }
+
 
 
 
