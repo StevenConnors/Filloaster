@@ -34,6 +34,14 @@ function sendLogin(response) {
   response.end(html);
 }
 
+function sendProfile(response) {
+  console.log("Request handler 'profile' was called.");
+  response.writeHead(200, {"Content-Type": "text/html"});
+  var html = fs.readFileSync(__dirname + "/pages/profile.html")
+  response.end(html);
+}
+
+
 function sendMain(response) {
   console.log("Request handler 'main' was called.");
   response.writeHead(200, {"Content-Type": "text/html"});
@@ -106,8 +114,17 @@ function sendPrototype1(response) {
 }
 
 
+function ajaxLogin(response) {
+  console.log("Request handler 'ajaxlogin' was called.");
+  response.writeHead(200, {"Content-Type": "text/php"});
+  var css = fs.readFileSync(__dirname + "/ajax_login.php")
+  response.end(css);
+}
+
+
 exports.sendRestaurant = sendRestaurant;
 exports.sendMain = sendMain;
+exports.sendProfile = sendProfile;
 exports.sendLogin = sendLogin;
 exports.sendDashboard = sendDashboard;
 exports.sendRandompage = sendRandompage;
@@ -120,5 +137,6 @@ exports.sendBsMinJS = sendBsMinJS;
 exports.sendLogo = sendLogo;
 exports.sendFilloasterDesign = sendFilloasterDesign;
 exports.sendPrototype1 = sendPrototype1;
+exports.ajaxLogin = ajaxLogin;
 
 

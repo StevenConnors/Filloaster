@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html>
 <head>
@@ -6,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Website</title>
 
-    <link href="bootstrap/css/bootstrap.min.css" rel = "stylesheet">
-    <link href="bootstrap/css/custom.css" rel = "stylesheet">
-    <script src = "bootstrap/js/respond.js"></script>
+    <link href="/bootstrap/css/bootstrap.min.css" rel = "stylesheet">
+    <link href="/bootstrap/css/custom.css" rel = "stylesheet">
+    <script src = "/bootstrap/js/respond.js"></script>
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -35,7 +34,7 @@
             
             <div class="ha-bg-parallax text-center block-marginb-none" data-type="background" data-speed="20">
                 <div class = "ha-navbar"> 
-                    <a href = "/bootstrap/index.html" class="btn"><span style = "color: white; "> Home </span></a>
+                    <a href = "main" class="btn"><span style = "color: white; "> Home </span></a>
                     <a href = "#ABOUT" class="btn"><span style = "color: white; "> About </span></a>
             </div>
             
@@ -52,7 +51,7 @@
                 </div>
                 <div class="ha-heading-parallax">Filloaster</div>
                 <p style = "font-family: trebuchet ms; font-size: 18px; color:white; font-style:italic;"> Don't wait anymore for a refill </p>
-                <a href = "/bootstrap/signin2.html" class=" btn" style="margin-right: 0px;"><span style = "color: white; padding:5px; font-size:20px;" > Sign in </span></a>
+                <a href = "login" class=" btn" style="margin-right: 0px;"><span style = "color: white; padding:5px; font-size:20px;" > Sign in </span></a>
 
             </div>
 
@@ -146,7 +145,7 @@
 
                 </div>
                 <div class="ha-heading-parallax"></div>
-                <div class="col-xs-4" style="background:rgba(255, 255, 255, .5); padding-bottom:25px;" >
+                <div class="col-xs-4" style="background:rgba(255, 255, 255, .5); padding-bottom:25px; border-radius:10px 0px 0px 10px;" >
                    <div class="ha-heading-parallax">Coaster</div>
                     <p style="color:#000000; font-style:bold; font-size:18px; opacity:1;"> The coaster portion of Filloaster works as a sensor to recognize what is happening around it. It is based on an Arduino Uno with an NFC reader and a load cell attached to it. Through the NFC reader we receive your phone number and through the load cell we receive the amount of drink. </p>
                 </div>
@@ -158,7 +157,7 @@
                  </div>
                  <div class="col-xs-4" style="background:rgba(255, 255, 255, .5);">
                     <div class="ha-heading-parallax">User</div>
-                    <p style="color:#000000; font-style:bold; font-size:18px; opacity:1;">
+                    <p style="color:#000000; font-style:bold; font-size:18px; opacity:1; border-radius:0px 10px 10px 0px;">
                     Finally the end user can receive data from its coaster via text messages, using a popular service called Twilio. This design choice was made primarily to ease the work done on the user end, so that they don't have to install "another" app onto their phone. The integration of these three systems combine to be the final product, Filloaster.</p>
                 </div>
             </div>
@@ -170,7 +169,7 @@
 
 <!-- javascript -->
     <script src="http://code.jquery.com/jquery-latest.min.js"></script>
-    <script src = "js/bootstrap.min.js"></script>
+    <script src = "/bootstrap/js/bootstrap.min.js"></script>
 
 </body>
 </html>
