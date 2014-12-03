@@ -55,6 +55,56 @@ function sendCSS(response) {
   response.end(css);
 }
 
+function sendBsCustomCSS(response) {
+  console.log("Request handler 'send BS customs CSS' was called.");
+  response.writeHead(200, {"Content-Type": "text/css"});
+  var css = fs.readFileSync(__dirname + "/bootstrap/css/custom.css")
+  response.end(css);
+}
+
+
+function sendBsMinCSS(response) {
+  console.log("Request handler 'send bs min CSS' was called.");
+  response.writeHead(200, {"Content-Type": "text/css"});
+  var css = fs.readFileSync(__dirname + "/bootstrap/css/bootstrap.min.css")
+  response.end(css);
+}
+
+function sendBsRespondJS(response) {
+  console.log("Request handler 'send bs response js' was called.");
+  response.writeHead(200, {"Content-Type": "text/js"});
+  var css = fs.readFileSync(__dirname + "/bootstrap/js/respond.js")
+  response.end(css);
+}
+
+function sendBsMinJS(response) {
+  console.log("Request handler 'send bs min js' was called.");
+  response.writeHead(200, {"Content-Type": "text/js"});
+  var css = fs.readFileSync(__dirname + "/bootstrap/js/bootstrap.min.js")
+  response.end(css);
+}
+
+function sendLogo(response) {
+  console.log("Request handler 'send bs min js' was called.");
+  response.writeHead(200, {"Content-Type": "img"});
+  var css = fs.readFileSync(__dirname + "/bootstrap/img/logo.png")
+  response.end(css);
+}
+
+function sendFilloasterDesign(response) {
+  console.log("Request handler 'sendFilloasterDesign' was called.");
+  response.writeHead(200, {"Content-Type": "img"});
+  var css = fs.readFileSync(__dirname + "/bootstrap/css/filloasterdesign.png")
+  response.end(css);
+}
+
+function sendPrototype1(response) {
+  console.log("Request handler 'sendPrototype1' was called.");
+  response.writeHead(200, {"Content-Type": "img"});
+  var css = fs.readFileSync(__dirname + "/bootstrap/css/prototype1.jpg")
+  response.end(css);
+}
+
 
 exports.sendRestaurant = sendRestaurant;
 exports.sendMain = sendMain;
@@ -63,5 +113,12 @@ exports.sendDashboard = sendDashboard;
 exports.sendRandompage = sendRandompage;
 exports.sendInterface = sendInterface;
 exports.sendCSS = sendCSS;
+exports.sendBsCustomCSS = sendBsCustomCSS;
+exports.sendBsMinCSS = sendBsMinCSS;
+exports.sendBsRespondJS = sendBsRespondJS;
+exports.sendBsMinJS = sendBsMinJS;
+exports.sendLogo = sendLogo;
+exports.sendFilloasterDesign = sendFilloasterDesign;
+exports.sendPrototype1 = sendPrototype1;
 
 
