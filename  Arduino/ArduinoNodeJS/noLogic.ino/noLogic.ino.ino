@@ -37,7 +37,7 @@ If 4, Then send signal to refill.
 */
 
 //FSM for NFCs
-int NFC_State = 2;
+int NFC_State = 0;
 /*
 If 0, then waiting for phone number
 If 1, then halting for diff NFC
@@ -245,6 +245,7 @@ void senseorMeasurements()
     {
       currentGlass = load;
       amountDrunk = fullGlass - currentGlass;
+      if (amountDrunk < 0) amountDrunk = 0;    
     }
     //Code to receive signal from webserver and to modify refillThreshold
     //Then jump to State 3

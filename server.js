@@ -14,7 +14,7 @@ var portName = '/dev/cu.usbmodem1411';
 
 var sendData = "";
 var phoneData = ""; //will be in form +14125157367
-var drinkData;
+var drinkData = "Water";
 
 //Twilio Auth
 var twilio = require('twilio');
@@ -27,7 +27,7 @@ var goodByeSent = false;
 //Drinking Application:
 var alcPercent = 0; //example 0.07
 var alcoholSuggestion = 48 //in mL
-
+var alcoholWarningSent = false;
 
 //Start server starts the server to run on.
 // handle contains locations to browse to (vote and poll); pathnames.
@@ -88,6 +88,8 @@ function serialListener(debug)
 		{
 			receivedData += data.toString();
 
+			//printReceivedData(receivedData);
+
 			// Read the Phone Number
 			if (receivedData .indexOf('P') >= 0 && receivedData .indexOf('H') >= 0) 
 			{
@@ -110,6 +112,7 @@ function serialListener(debug)
 					drinkSent = true;
 				}
 			}
+
 			// Read the sensor Values
 			if ( (receivedData .indexOf('E') >= 0) && (receivedData .indexOf('B') >= 0) && (receivedData .indexOf('E')>receivedData .indexOf('B')) ) 
 			{
@@ -131,7 +134,6 @@ function serialListener(debug)
 				stateData = receivedData .substring(receivedData .indexOf('F') + 1, receivedData .indexOf('U'));
 				receivedData = '';
 				SocketIO_serialemitFullGlass(stateData);
-
 			}
 
 			if (receivedData .indexOf('G') >= 0 && receivedData .indexOf('L') >= 0) 
@@ -172,6 +174,25 @@ function serialListener(debug)
 		});
 	});
 }
+
+
+function printReceivedData(receivedData){
+	state1 = (receivedData .indexOf('P') >= 0 && receivedData .indexOf('H') >= 0);
+
+	state2 = (receivedData .indexOf('N') >= 0 && receivedData .indexOf('C') >= 0) ;
+	state3 = ( (receivedData .indexOf('E') >= 0) && (receivedData .indexOf('B') >= 0) && (receivedData .indexOf('E')>receivedData .indexOf('B')) ) ;
+	state4 = (receivedData .indexOf('S') >= 0 && receivedData .indexOf('D') >= 0) ;
+	state5 = (receivedData .indexOf('F') >= 0 && receivedData .indexOf('U') >= 0) ;
+	state6 = (receivedData .indexOf('G') >= 0 && receivedData .indexOf('L') >= 0) ;
+	state7 = (receivedData .indexOf('T') >= 0 && receivedData .indexOf('A') >= 0) ;
+	state8 = (receivedData .indexOf('C') >= 0 && receivedData .indexOf('H') >= 0) ;
+	state9 = (receivedData .indexOf('U') >= 0 && receivedData .indexOf('R') >= 0) ;
+	if (state1 || state2 || state3 || state4 || state5 || state6 || state7 || state8 || state9){
+		console.log(receivedData);
+	}
+	return;
+}
+
 
 function getPhoneNumber(phoneData)
 {
@@ -217,14 +238,17 @@ function goodByeTwilio(client, phoneNumber, totalDrank, drinkData)
 
 function alcoholWarningTwilio(client, phoneNumber, totalDrank)
 {
-    client.sms.messages.create({
-        to: phoneNumber,
-        from:'(530) 924-0498',
-        body:"Please be careful in your alcohol consumption. Drinking and driving is prohibited."
-    }, 
-    function sendMessage() {
-        console.log("alcohol warning message sent");
-    });
+	if (!(alcoholWarningSent)){
+	    client.sms.messages.create({
+	        to: phoneNumber,
+	        from:'(530) 924-0498',
+	        body:"Please be careful in your alcohol consumption. Drinking and driving is prohibited."
+	    }, 
+	    function sendMessage() {
+	        console.log("alcohol warning message sent");
+	    });
+	    alcoholWarningSent = true;
+	}
 }
 
 function setDrink(tagData)
@@ -242,7 +266,7 @@ function setDrink(tagData)
 	}
 	else
 	{
-		drinkData = "";
+		drinkData = "Coke";
 	}
 	return drinkData;
 }
