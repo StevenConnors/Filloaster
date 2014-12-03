@@ -180,12 +180,13 @@ html,body{
 	-o-background-size: cover;
 	-webkit-background-size: cover;
 	background-size: cover;
-	height: 400px;
+	height: 700px;
 	margin: 0 auto;
 	width: 100%;
 	display: table;
 	vertical-align: middle;
 	margin-top: 5px;
+	border-radius: 10px 10px 0px 0px;
 
 }
 
@@ -213,20 +214,21 @@ html,body{
 
 .ha-bg-parallax .ha-diamond-divider-md {
 
-    margin: 15px 0px;
+    margin: 0px;
 
 }
 
 
 
 .ha-bg-parallax .ha-heading-parallax {
-	font-family: "trebuchet ms";
+    font-family: "trebuchet ms";
     font-style: italic;
     font-weight: bold;
     text-transform: none;
     color: #ffffff;
     padding-bottom: 0px;
-   	font-size: 52px;
+   	font-size: 70px;
+   	margin-left:10px;
 
 }
 
@@ -270,7 +272,6 @@ html,body{
 	width: 100%;
 	display: table;
 	vertical-align: middle;
-	border-radius: 10px;
 	margin-right: -15px;
 }
 
@@ -328,7 +329,6 @@ html,body{
 	width: 100%;
 	display: table;
 	vertical-align: middle;
-	border-radius: 10px;
 	margin-right: -15px;
 }
 
@@ -387,7 +387,7 @@ html,body{
 	width: 100%;
 	display: table;
 	vertical-align: middle;
-	border-radius: 10px;
+	border-radius: 0px 0px 10px 10px;
 	margin-right: -15px;
 	margin-bottom: 10px;
 }
