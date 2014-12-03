@@ -29,6 +29,82 @@ var alcPercent = 0; //example 0.07
 var alcoholSuggestion = 48 //in mL
 var alcoholWarningSent = false;
 
+//Recommendations
+
+//Have my data (so what I already ordered) This should be an array.
+//Have an existing trie.
+var globalDB = [ ["Water",3], ["Beer",3],["Coke",2],["Red Wine",3],["Guiness",0],["Yueng",0],["SamAdams",0],["Sprite",0],["GingerAle",0],["ExpensiveWine",0],["okWine",0],["cheapWine",0] ]
+var myDB = [];
+//var myDB = ["Water"];
+
+function sendSuggestions(){
+	var rootFound = false;
+	var index = 0;
+	while (!rootFound)
+	{
+		//if root
+		if (myDB[index]==globalDB[0][0])
+		{
+			var temp = myDB[0];
+			myDB[0] = myDB[index];
+			myDB[index] = temp;
+			rootFound = true;
+		}
+		index++;
+	}
+	//Get child 
+	var child = myDB[1];
+	var numChild = globalDB[0][1]; //3
+	var sumGrandChild = 0;
+	var numSkip = 0;
+	var grandChildren = [];
+	for (var i = 0; i<numChild; i++)
+	{
+		if (globalDB[1+i][0] == child)
+		{
+			numSkip = sumGrandChild+numChild;
+			numGrandChild = globalDB[1+i][1];
+		}
+		sumGrandChild = sumGrandChild + globalDB[1+i][1];
+
+	}
+	for (var j = 0; j < numGrandChild; j++)
+	{
+		grandChildren.push(globalDB[numSkip+j+1][0]);
+	}
+	console.log(grandChildren);
+	recommendationTwilio(client,phoneNumber,grandChildren);
+	return grandChildren;
+}
+
+function recommendationTwilio(client, phoneNumber, recs)
+{
+	body = "Here are some recommendations of drinks based upon your choices: ";
+	for (var i = 0; i<recs.length;i++)
+	{
+		drink = recs[i];
+		if (i < recs.length-1) 
+		{
+			string = drink.concat(", ");
+		}
+		else
+		{
+			string = "and ".concat(drink,".");
+		}
+		body = body.concat(string);
+	}
+
+    client.sms.messages.create({
+        to: phoneNumber,
+        from:'(530) 924-0498',
+        body:body
+    }, 
+    function sendMessage() {
+        console.log("recommendation message sent");
+    });
+}
+
+
 //Start server starts the server to run on.
 // handle contains locations to browse to (vote and poll); pathnames.
 function startServer(route,handle,debug)
@@ -100,7 +176,7 @@ function serialListener(debug)
 				console.log("Phone portion Done!");
 				receivedData = '';
 			}
-			//Read NFC values
+			//Read Drink
 			if (receivedData .indexOf('N') >= 0 && receivedData .indexOf('C') >= 0) 
 			{
 				tagData = receivedData .substring(receivedData .indexOf('N') + 1, receivedData .indexOf('C'));
@@ -110,7 +186,11 @@ function serialListener(debug)
 				{
 					SocketIO_serialemitDrink(drinkData);
 					drinkSent = true;
+					//For the suggestions			
+					myDB.push(drinkData);
+					sendSuggestions();
 				}
+				//send suggestions of other drinks here
 			}
 
 			// Read the sensor Values
@@ -255,7 +335,7 @@ function setDrink(tagData)
 {
 	if (tagData == "484F0A433D80") // the sticker
 	{
-		drinkData = "Water";
+		drinkData = "Coke";
 	}
 	//else if (tagData ==  "7413BBDF"){ //the big tag
 	//	drinkData = "Coke";

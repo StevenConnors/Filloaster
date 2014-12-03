@@ -15,7 +15,7 @@ boolean toggleComplete = false;  // whether the string is complete
 char inChar;
 
 // Potmeter vars
-const int analogInPin = A0;
+const int analogInPin = A1;
 int sensorValue = 0;        // value read from the potmeter
 int prevValue = 0;          // previous value from the potmeter
 
@@ -388,6 +388,7 @@ int stringToInt()
     int _recievedVal = atoi(charHolder);
     return _recievedVal;
 }
+
 
 
 
