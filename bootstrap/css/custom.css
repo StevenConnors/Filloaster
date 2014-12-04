@@ -1,7 +1,7 @@
 /* this is a custom CSS stylesheet */
 
 .box{
-    border:10px solid #000;
+	border:10px solid #000;
     border-radius: 5px 5px 5px 5px;
     width: 150px;
     height: 150px;
@@ -13,7 +13,7 @@
 
 }
 .chair{
-    border:10px solid #000;
+	border:10px solid #000;
     border-radius: 5px 5px 5px 5px;
     width: 50px;
     height: 50px;
@@ -24,7 +24,7 @@
 }
 
 .chairtb{
-    border:10px solid #000;
+	border:10px solid #000;
     border-radius: 5px 5px 5px 5px;
     width: 50px;
     height: 50px;
@@ -173,7 +173,6 @@ html,body{
 }
 
 .ha-bg-parallax {
-
     background: url(http://i.vimeocdn.com/video/443529180_640.jpg) 50% -195px no-repeat fixed;
     opacity: 0.7;
     -moz-background-size: cover;
@@ -187,38 +186,24 @@ html,body{
     vertical-align: middle;
     margin-top: 5px;
     border-radius: 10px 10px 0px 0px;
-
 }
-
-
 
 .ha-bg-parallax .ha-parallax-body {
-
     display: table-cell;
     vertical-align: middle;
-
 }
 
-
-
 .ha-bg-parallax .ha-content-whitecolor {
-
     font-size: 17px;
     color: #ffffff;
     width: 45%;
     margin: auto;
-
 }
 
-
-
 .ha-bg-parallax .ha-diamond-divider-md {
-
     margin: 0px;
 
 }
-
-
 
 .ha-bg-parallax .ha-heading-parallax {
     font-family: "trebuchet ms";
@@ -227,9 +212,8 @@ html,body{
     text-transform: none;
     color: #ffffff;
     padding-bottom: 0px;
-    font-size: 70px;
-    margin-left:10px;
-
+   	font-size: 70px;
+   	margin-left:10px;
 }
 
 .ha-bg-parallax .btn-lg{
@@ -278,35 +262,23 @@ html,body{
 
 
 .ha-bg-parallax2 .ha-parallax-body {
-
-    display: table-cell;
-    vertical-align: middle;
-
+	display: table-cell;
+	vertical-align: middle;
 }
 
-
-
 .ha-bg-parallax2 .ha-content-whitecolor {
-
     font-size: 17px;
     color: #ffffff;
     width: 45%;
     margin: auto;
-
 }
-
-
 
 .ha-bg-parallax2 .ha-diamond-divider-md {
-
     margin: 0px;
-
 }
 
-
-
 .ha-bg-parallax2 .ha-heading-parallax {
-    font-family: "trebuchet ms";
+	font-family: "trebuchet ms";
     font-style: italic;
     font-weight: bold;
     text-transform: none;
@@ -315,10 +287,9 @@ html,body{
     margin-left: 160px;
     margin-top: -100px;
     float:left;
-
 }
-.ha-bg-parallax3{
 
+.ha-bg-parallax3{
     background: url(filloasterdesign.png) 50% -195px repeat fixed;
     opacity: 0.7;
     -moz-background-size: cover;
@@ -332,35 +303,21 @@ html,body{
     margin-right: -15px;
 }
 
-
-
 .ha-bg-parallax3 .ha-parallax-body {
-
     display: table-cell;
     vertical-align: middle;
-
 }
 
-
-
 .ha-bg-parallax3 .ha-content-whitecolor {
-
     font-size: 17px;
     color: #ffffff;
     width: 45%;
     margin: auto;
-
 }
-
-
 
 .ha-bg-parallax3 .ha-diamond-divider-md {
-
     margin: 0px;
-
 }
-
-
 
 .ha-bg-parallax3 .ha-heading-parallax {
     font-family: "trebuchet ms";
@@ -372,11 +329,9 @@ html,body{
     margin-right: 230px;
     margin-top: -93px;
     float:right;
-
 }
 
 .ha-bg-parallax4{
-
     background: url(prototype1.jpg) 50% -195px repeat fixed;
     opacity: 0.7;
     -moz-background-size: cover;
@@ -392,35 +347,21 @@ html,body{
     margin-bottom: 10px;
 }
 
-
-
 .ha-bg-parallax4 .ha-parallax-body {
-
-    display: table-cell;
-    vertical-align: middle;
-
+	display: table-cell;
+	vertical-align: middle;
 }
-
-
 
 .ha-bg-parallax4 .ha-content-whitecolor {
-
-    font-size: 17px;
-    color: #ffffff;
-    width: 45%;
-    margin: auto;
-
+	font-size: 17px;
+	color: #ffffff;
+	width: 45%;
+	margin: auto;
 }
-
-
 
 .ha-bg-parallax4 .ha-diamond-divider-md {
-
     margin: 0px;
-
 }
-
-
 
 .ha-bg-parallax4 .ha-heading-parallax {
     font-family: "trebuchet ms";
@@ -432,8 +373,6 @@ html,body{
     margin-left: 120px;
     margin-top: -100px;
     float:left;
-
-
 }
 
 .navbar-inner{

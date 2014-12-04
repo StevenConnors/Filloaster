@@ -15,73 +15,74 @@
 </head>
 
 <body>
-<div class="container">
-<legend>Sign In </legend>
-<form class="form-horizontal" method="post" action="" id="login_form">
-                      <div class="control-group">
-                        <label class="control-label" for="username">Username</label>
-                        <div class="controls">
-                          <input type="text" id="username" placeholder="Username">
-                        </div>
-                      </div>
-                      <div class="control-group">
-                        <label class="control-label" for="password">Password</label>
-                        <div class="controls">
-                          <input type="password" id="password" placeholder="Password">
-                        </div>
-                      </div>
-                      <div class="control-group">
-                        <div class="controls">
-                          <label class="checkbox">
-                            <input type="checkbox"> Remember me
-                          </label>
-                          <input name="Submit" type="submit" id="submit" value="Login" class="btn btn-success"/>
-                          <input type="reset" name="Reset" value="Reset" class="btn"/>
-                        </div>
-                      </div>
-                    </form>
+  <div class="container">
+  <div class="login-container">
+            <div id="output"></div>
+            <div class="avatar"></div>
+            <div class="form-box">
+                <form method="get" action="profile.html">
+                    <input name="user" type="text" placeholder="username">
+                    <input type="password" placeholder="password" id="myPsw" value= "">
+                    <button class="btn btn-info btn-block login" type="submit">Login</button>
+                </form>
+                <form action="profile.html">
+                  <input type="hidden" name="varname"  value="" />
+                </form>
+            </div>
+        </div>
+</FORM>
+        
+</div>
 
 <script type="text/javascript">
-$(document).ready(function()
-{
-  $("#login_form").submit(function()
-  {
-    //remove all the class add the messagebox classes and start fading
-    $("#msgbox").removeClass().addClass('messagebox').text('Validating....').fadeIn(1000);
-    //check the username exists or not from ajax
-    $.post("ajax_login.php",{ user_name:$('#username').val(),password:$('#password').val(),rand:Math.random() } ,function(data)
-        {
-      if(data=='yes') //if correct login detail
+function redirect(){
+    var textfield = $("input[name=user]");
+
+    setTimeout(function () {window.location.href = "profile.html" + "?user=" + textfield.val() + "&";}, 1000); //will call the function after 2 secs
+}
+
+$(function(){
+var textfield = $("input[name=user]");
+var pass = document.getElementById("myPsw");
+
+$('button[type="submit"]').click(function(e) {
+    e.preventDefault();
+    //little validation just to check username
+    if((pass.value != "") && (textfield.val() ==""))
       {
-        $("#msgbox").fadeTo(200,0.1,function()  //start fading the messagebox
-      { 
-        //add message and change the class of the box and start fading
-        $(this).html('Logging in.....').addClass('messageboxok').fadeTo(900,1,
-              function()
-        { 
-           //redirect to secure page
-         document.location='logsuccess.html';
-        });
-        
-      });
+        $("#output").removeClass(' alert alert-success');
+        $("#output").addClass("alert alert-danger animated fadeInUp").html("Please enter username");
       }
-      else 
+    else if((pass.value == "") && (textfield.val() ==""))
       {
-        $("#msgbox").fadeTo(200,0.1,function() //start fading the messagebox
-      { 
-        //add message and change the class of the box and start fading
-        $(this).html('Your login detail sucks...').addClass('messageboxerror').fadeTo(900,1);
-      });   
-          }
-        
-        });
-    return false; //not to post the  form physically
-  });
-  //now call the ajax also focus move from 
-  $("#password").blur(function()
-  {
-    $("#login_form").trigger('submit');
-  });
+        $("#output").removeClass(' alert alert-success');
+        $("#output").addClass("alert alert-danger animated fadeInUp").html("Please enter all fields");
+      }
+    else if ((textfield.val()!= "") && (pass.value != "")) 
+    {
+      //$("body").scrollTo("#output");
+      $("#output").addClass("alert alert-success animated fadeInUp").html("Welcome back " + "<span style='text-transform:uppercase'>" + textfield.val() + "</span>");
+      $("#output").removeClass(' alert-danger');
+      $("input").css({ "height":"0", "padding":"0", "margin":"0", "opacity":"0"});
+
+      //show avatar
+      $(".avatar").css({"background-image": "url('https://cdn3.iconfinder.com/data/icons/black-easy/512/538474-user_512x512.png')"});
+
+      //change button text 
+      $('button[type="submit"]').html("redirecting...").removeClass("btn-info").click(redirect());
+      
+      
+    } 
+    else 
+    {
+      $("#output").removeClass(' alert alert-success');
+      $("#output").addClass("alert alert-danger animated fadeInUp").html("Please enter password");
+
+      //remove success mesage replaced with error message
+      
+    }
+
+});
 });
 </script>
 
