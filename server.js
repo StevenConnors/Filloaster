@@ -6,103 +6,33 @@ SerialPort = require("serialport").SerialPort
 
 var socketServer;
 var serialPort;
-
 var portName = '/dev/cu.usbmodem1411'; 
-//var portName = '/dev/cu.Bluetooth-Incoming-Port'; 
 //var portName = '/dev/cu.HC-05-DevB';
-//Comment portName when not using arduino
-
-var sendData = "";
-var phoneData = ""; //will be in form +14125157367
-var drinkData = "Water";
+//Use 2nd portName if using Bluetooth
 
 //Twilio Auth
 var twilio = require('twilio');
-var client = new twilio.RestClient('AC5afd49b367bd857f5e4e3647cab78d83', '1cf4be2b2f749a85d7c469b798ffdb5c');
+var client = new twilio.RestClient('Key', 'PW');
 
+//Declaring globals
+var sendData = "";
+var phoneData = ""; //will be in form +1ABCDEFGHIJ
+var drinkData = "Water";
 //total amount drank
 var totalDrank;
 var goodByeSent = false;
-
 //Drinking Application:
 var alcPercent = 0; //example 0.07
-var alcoholSuggestion = 48 //in mL
+var alcoholSuggestion = 48 //in mL of pure alcohol (4 shots worth)
 var alcoholWarningSent = false;
 
-//Recommendations
-
-//Have my data (so what I already ordered) This should be an array.
+//Recommendation Application
 //Have an existing trie.
-var globalDB = [ ["Water",3], ["Beer",3],["Coke",2],["Red Wine",3],["Guiness",0],["Yueng",0],["SamAdams",0],["Sprite",0],["GingerAle",0],["ExpensiveWine",0],["okWine",0],["cheapWine",0] ]
-//var myDB = [];
-var myDB = ["Water"];
-
-function sendSuggestions(){
-	var rootFound = false;
-	var index = 0;
-	while (!rootFound)
-	{
-		//if root
-		if (myDB[index]==globalDB[0][0])
-		{
-			var temp = myDB[0];
-			myDB[0] = myDB[index];
-			myDB[index] = temp;
-			rootFound = true;
-		}
-		index++;
-	}
-	//Get child 
-	var child = myDB[1];
-	var numChild = globalDB[0][1]; //3
-	var sumGrandChild = 0;
-	var numSkip = 0;
-	var grandChildren = [];
-	for (var i = 0; i<numChild; i++)
-	{
-		if (globalDB[1+i][0] == child)
-		{
-			numSkip = sumGrandChild+numChild;
-			numGrandChild = globalDB[1+i][1];
-		}
-		sumGrandChild = sumGrandChild + globalDB[1+i][1];
-
-	}
-	for (var j = 0; j < numGrandChild; j++)
-	{
-		grandChildren.push(globalDB[numSkip+j+1][0]);
-	}
-	console.log(grandChildren);
-	recommendationTwilio(client,phoneNumber,grandChildren);
-	return grandChildren;
-}
-
-function recommendationTwilio(client, phoneNumber, recs)
-{
-	body = "Here are some recommendations of drinks based upon your choices: ";
-	for (var i = 0; i<recs.length;i++)
-	{
-		drink = recs[i];
-		if (i < recs.length-1) 
-		{
-			string = drink.concat(", ");
-		}
-		else
-		{
-			string = "and ".concat(drink,".");
-		}
-		body = body.concat(string);
-	}
-
-    client.sms.messages.create({
-        to: phoneNumber,
-        from:'(530) 924-0498',
-        body:body
-    }, 
-    function sendMessage() {
-        console.log("recommendation message sent");
-    });
-}
+var globalDB = [ ["Water",3], ["Beer",3],["Coke",2],["Red Wine",3],
+					["Guiness",0],["Yueng",0],["SamAdams",0],["Sprite",0],
+					["GingerAle",0],["ExpensiveWine",0],["okWine",0],
+					["cheapWine",0] ];
+var myDB = ["Water"]; //for example
 
 
 //Start server starts the server to run on.
@@ -142,7 +72,11 @@ function initSocketIO(httpServer,debug)
 	});
 }
 
-// Listen to serial port
+/*Listens to serial communication with the Arduino. As arduino spits out chars 
+and numbers, the following parses it so that with a given combination, it
+branches out and executes different portions of code. Each handler has 
+function format of SocketIO_serialEmitXXXXX();
+*/
 function serialListener(debug) 
 {
 	drinkSent = false;
@@ -162,90 +96,86 @@ function serialListener(debug)
 		// Listens to incoming data
 		serialPort.on('data', function(data) 
 		{
-			receivedData += data.toString();
-
-			//printReceivedData(receivedData);
-
+			//rD is short for receivedData
+			rD += data.toString();
 			// Read the Phone Number
-			if (receivedData .indexOf('P') >= 0 && receivedData .indexOf('H') >= 0) 
+			if (rD .indexOf('P') >= 0 && rD .indexOf('H') >= 0) 
 			{
 				console.log("Within Phone portion");
-				phoneData = receivedData .substring(receivedData .indexOf('P') + 1, receivedData .indexOf('H'));
+				phoneData = rD .substring(rD .indexOf('P') + 1, rD .indexOf('H'));
 				phoneNumber = getPhoneNumber(phoneData);
 				welcomeTwilio(client, phoneNumber);
 				console.log("Phone portion Done!");
-				receivedData = '';
+				rD = '';
 			}
 			//Read Drink
-			if (receivedData .indexOf('N') >= 0 && receivedData .indexOf('C') >= 0) 
+			if (rD .indexOf('N') >= 0 && rD .indexOf('C') >= 0) 
 			{
-				tagData = receivedData .substring(receivedData .indexOf('N') + 1, receivedData .indexOf('C'));
-				receivedData = '';
+				tagData = rD .substring(rD .indexOf('N') + 1, rD .indexOf('C'));
+				rD = '';
 				drinkData = setDrink(tagData);
 				if ((drinkData!="") && (!drinkSent))
 				{
 					SocketIO_serialemitDrink(drinkData);
 					drinkSent = true;
-					//For the suggestions			
+					//Provides suggestions
 					myDB.push(drinkData);
 					sendSuggestions();
 				}
-				//send suggestions of other drinks here
 			}
-
 			// Read the sensor Values
-			if ( (receivedData .indexOf('E') >= 0) && (receivedData .indexOf('B') >= 0) && (receivedData .indexOf('E')>receivedData .indexOf('B')) ) 
+			if ((rD .indexOf('E') >= 0) && (rD .indexOf('B') >= 0) && \
+					(rD .indexOf('E')>rD .indexOf('B'))) 
 			{
-				sendData = receivedData .substring(receivedData .indexOf('B') + 1, receivedData .indexOf('E'));
-				receivedData = '';
+				sendData = rD .substring(rD .indexOf('B') + 1, rD .indexOf('E'));
+				rD = '';
 				console.log(sendData);
 				SocketIO_serialemitValue(sendData);
 			}
 			// Read the Filloaster State
-			if (receivedData .indexOf('S') >= 0 && receivedData .indexOf('D') >= 0) 
+			if (rD .indexOf('S') >= 0 && rD .indexOf('D') >= 0) 
 			{
-				stateData = receivedData .substring(receivedData .indexOf('S') + 1, receivedData .indexOf('D'));
-				receivedData = '';
+				stateData = rD .substring(rD .indexOf('S') + 1, rD .indexOf('D'));
+				rD = '';
 				SocketIO_serialemitState(stateData);
 			}
-
-			if (receivedData .indexOf('F') >= 0 && receivedData .indexOf('U') >= 0) 
+			//Read FullGlass Values
+			if (rD .indexOf('F') >= 0 && rD .indexOf('U') >= 0) 
 			{
-				stateData = receivedData .substring(receivedData .indexOf('F') + 1, receivedData .indexOf('U'));
-				receivedData = '';
+				stateData = rD .substring(rD .indexOf('F') + 1, rD .indexOf('U'));
+				rD = '';
 				SocketIO_serialemitFullGlass(stateData);
 			}
-
-			if (receivedData .indexOf('G') >= 0 && receivedData .indexOf('L') >= 0) 
+			//Read current glass values
+			if (rD .indexOf('G') >= 0 && rD .indexOf('L') >= 0) 
 			{
-				stateData = receivedData .substring(receivedData .indexOf('G') + 1, receivedData .indexOf('L'));
-				receivedData = '';
+				stateData = rD .substring(rD .indexOf('G') + 1, rD .indexOf('L'));
+				rD = '';
 				SocketIO_serialemitCurrentGlass(stateData);
 			}
-
-			if (receivedData .indexOf('T') >= 0 && receivedData .indexOf('A') >= 0) 
+			//read total amount drunk
+			if (rD .indexOf('T') >= 0 && rD .indexOf('A') >= 0) 
 			{
-				stateData = receivedData .substring(receivedData .indexOf('T') + 1, receivedData .indexOf('A'));
-				receivedData = '';
-
-				//Don't drink too much!
+				stateData = rD .substring(rD .indexOf('T') + 1, rD .indexOf('A'));
+				rD = '';
+				//checks amount of alcohol
 				if (alcPercent * stateData > alcoholSuggestion){
 					alcoholWarningTwilio(client, phoneNumber, totalDrank);
 				}
 				SocketIO_serialemitTotalAmount(stateData);
 			}
-
-			if (receivedData .indexOf('C') >= 0 && receivedData .indexOf('H') >= 0) 
+			//read elapsed time
+			if (rD .indexOf('C') >= 0 && rD .indexOf('H') >= 0) 
 			{
-				stateData = receivedData .substring(receivedData .indexOf('C') + 1, receivedData .indexOf('H'));
-				receivedData = '';
+				stateData = rD .substring(rD .indexOf('C') + 1, rD .indexOf('H'));
+				rD = '';
 				SocketIO_serialemitElapsedTime(stateData);
 			}
-
-			if (receivedData .indexOf('U') >= 0 && receivedData .indexOf('R') >= 0) 
+			//read if user left
+			if (rD .indexOf('U') >= 0 && rD .indexOf('R') >= 0) 
 			{
-				stateData = receivedData .substring(receivedData .indexOf('U') + 1, receivedData .indexOf('R'));
-				receivedData = '';
+				stateData = rD .substring(rD .indexOf('U') + 1, rD .indexOf('R'));
+				rD = '';
 				//If user left, send message
 				if (stateData == "1"){
 					goodByeTwilio(client, phoneNumber, totalDrank, drinkData);
@@ -255,44 +185,74 @@ function serialListener(debug)
 	});
 }
 
-
-function printReceivedData(receivedData){
-	state1 = (receivedData .indexOf('P') >= 0 && receivedData .indexOf('H') >= 0);
-
-	state2 = (receivedData .indexOf('N') >= 0 && receivedData .indexOf('C') >= 0) ;
-	state3 = ( (receivedData .indexOf('E') >= 0) && (receivedData .indexOf('B') >= 0) && (receivedData .indexOf('E')>receivedData .indexOf('B')) ) ;
-	state4 = (receivedData .indexOf('S') >= 0 && receivedData .indexOf('D') >= 0) ;
-	state5 = (receivedData .indexOf('F') >= 0 && receivedData .indexOf('U') >= 0) ;
-	state6 = (receivedData .indexOf('G') >= 0 && receivedData .indexOf('L') >= 0) ;
-	state7 = (receivedData .indexOf('T') >= 0 && receivedData .indexOf('A') >= 0) ;
-	state8 = (receivedData .indexOf('C') >= 0 && receivedData .indexOf('H') >= 0) ;
-	state9 = (receivedData .indexOf('U') >= 0 && receivedData .indexOf('R') >= 0) ;
-	if (state1 || state2 || state3 || state4 || state5 || state6 || state7 || state8 || state9){
-		console.log(receivedData);
+/* Iterate through the trie in the DB and return the possible drinks that a user
+would like. Then send that data via Twilio. */
+function sendSuggestions(){
+	var rootFound = false;
+	var index = 0;
+	//Find the root node
+	while (!rootFound){
+		if (myDB[index] == globalDB[0][0]){
+			var temp = myDB[0];
+			myDB[0] = myDB[index];
+			myDB[index] = temp;
+			rootFound = true;
+		}
+		index++;
 	}
+	//Get child 
+	var child = myDB[1];
+	var numChild = globalDB[0][1]; //3
+	var sumGrandChild = 0;
+	var numSkip = 0;
+	var grandChildren = [];
+	//Find where starting location is
+	for (var i = 0; i<numChild; i++)
+	{
+		if (globalDB[1+i][0] == child)
+		{
+			numSkip = sumGrandChild+numChild;
+			numGrandChild = globalDB[1+i][1];
+		}
+		sumGrandChild = sumGrandChild + globalDB[1+i][1];
+
+	}
+	//retrieve grandChildren
+	for (var j = 0; j < numGrandChild; j++)
+	{
+		grandChildren.push(globalDB[numSkip+j+1][0]);
+	}
+	//send Message via Twilio
+	recommendationTwilio(client,phoneNumber,grandChildren);
 	return;
 }
 
+function setDrink(tagData)
+{
+	return tagData.read();
+}
 
+//Functions regarding Twilio
 function getPhoneNumber(phoneData)
 {
-	if (phoneData == "4ADEFA433D80")
+	if (phoneData != "")
 	{
-		return '+14125157367';
+		return phoneData;
 	}
 	return null;
 }
 
 function welcomeTwilio(client, phoneNumber)
 {
-    client.sms.messages.create({
-        to: phoneNumber,
-        from:'(530) 924-0498',
-        body:"Welcome to 15-291. Please try our assortment of hardware that is paid by our professors."
-    }, 
-    function sendMessage() {
-        console.log("welcome message sent");
-    });
+	client.sms.messages.create({
+		to: phoneNumber,
+		from:TwilioNumber,
+		body:"Welcome to 15-291. Please try our assortment of hardware that\
+				is paid by our professors."
+	}, 
+	function sendMessage() {
+		console.log("welcome message sent");
+	});
 }
 
 function goodByeTwilio(client, phoneNumber, totalDrank, drinkData)
@@ -303,52 +263,60 @@ function goodByeTwilio(client, phoneNumber, totalDrank, drinkData)
 		body3 = ". We look forward to your next visit.";
 		body = body1.concat(totalDrank,body2,drinkData,body3);
 
-	    client.sms.messages.create({
-	        to: phoneNumber,
-	        from:'(530) 924-0498',
-	        body:body
-	    }, 
-	    function sendMessage() {
-	        console.log("good bye message sent");
-	    });
-	    goodByeSent = true;
+		client.sms.messages.create({
+			to: phoneNumber,
+			from:TwilioNumber,
+			body:body
+		}, 
+		function sendMessage() {
+			console.log("good bye message sent");
+		});
+		goodByeSent = true;
 	}
 }
-
 
 function alcoholWarningTwilio(client, phoneNumber, totalDrank)
 {
 	if (!(alcoholWarningSent)){
-	    client.sms.messages.create({
-	        to: phoneNumber,
-	        from:'(530) 924-0498',
-	        body:"Please be careful in your alcohol consumption. Drinking and driving is prohibited."
-	    }, 
-	    function sendMessage() {
-	        console.log("alcohol warning message sent");
-	    });
-	    alcoholWarningSent = true;
+		client.sms.messages.create({
+			to: phoneNumber,
+			from:TwilioNumber,
+			body:"Please be careful in your alcohol consumption. Drinking and \
+			driving is prohibited."
+		}, 
+		function sendMessage() {
+			console.log("alcohol warning message sent");
+		});
+		alcoholWarningSent = true;
 	}
 }
 
-function setDrink(tagData)
+function recommendationTwilio(client, phoneNumber, recs)
 {
-	if (tagData == "484F0A433D80") // the sticker
+	//create body message
+	body = "Here are some recommendations of drinks based upon your choices: ";
+	for (var i = 0; i<recs.length;i++)
 	{
-		drinkData = "Coke";
+		drink = recs[i];
+		if (i < recs.length-1) 
+		{
+			string = drink.concat(", ");
+		}
+		else
+		{
+			string = "and ".concat(drink,".");
+		}
+		body = body.concat(string);
 	}
-	//else if (tagData ==  "7413BBDF"){ //the big tag
-	//	drinkData = "Coke";
-	//}
-	else if (tagData == "7413BBDF"){ //tag
-		drinkData = "Beer";
-		alcPercent = 10.07;
-	}
-	else
-	{
-		drinkData = "Coke";
-	}
-	return drinkData;
+
+	client.sms.messages.create({
+		to: phoneNumber,
+		from:TwilioNumber,
+		body:body
+	}, 
+	function sendMessage() {
+		console.log("recommendation message sent");
+	});
 }
 
 function SocketIO_serialemitValue(sendData)
@@ -359,42 +327,34 @@ function SocketIO_serialemitValue(sendData)
 
 function SocketIO_serialemitDrink(drinkData)
 {
-	//Information about drink is passed here//
 	console.log("Drink: ",drinkData);
 	socketServer.emit('updateDrink',{drink:drinkData});
 }
 
 function SocketIO_serialemitState(stateData)
 {
-	//console.log("state: ",stateData);
 	socketServer.emit('updateState', {state:stateData});
 }
 
 function SocketIO_serialemitFullGlass(fullGlassData)
 {
-	//console.log("state: ",fullGlassData);
 	socketServer.emit('updateFullGlass', {fullGlass:fullGlassData});
 }
 
 function SocketIO_serialemitCurrentGlass(currentGlassData)
 {
-	//console.log("state: ",currentGlassData);
 	socketServer.emit('updateCurrentGlass', {currentGlass:currentGlassData});
 }
 
 function SocketIO_serialemitElapsedTime(elapsedData)
 {
-	//console.log("state: ",currentGlassData);
 	socketServer.emit('updateElapsedData', {elapsed:elapsedData});
 }
 
 function SocketIO_serialemitTotalAmount(totalAmountData)
 {
-	//console.log("state: ",currentGlassData);
 	totalDrank = totalAmountData;
 	socketServer.emit('updateTotalAmount', {totalAmount:totalAmountData});
 }
 
 exports.start = startServer;
-
-//Restaurant text Files

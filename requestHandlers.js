@@ -12,14 +12,6 @@ function sendInterface(response) {
   response.end(html);
 }
 
-function sendRandompage(response) {
-  console.log("Request handler 'randompage' was called.");
-  response.writeHead(200, {"Content-Type": "text/html"});
-  var html = fs.readFileSync(__dirname + "/pages/randompage.html")
-  response.end(html);
-}
-//Keep mimicking the functions above to make more routes for requests
-
 function sendDashboard(response) {
   console.log("Request handler 'dashboard' was called.");
   response.writeHead(200, {"Content-Type": "text/html"});
@@ -146,5 +138,3 @@ exports.sendFilloasterDesign = sendFilloasterDesign;
 exports.sendPrototype1 = sendPrototype1;
 exports.ajaxLogin = ajaxLogin;
 exports.sendSquares = sendSquares;
-
-
