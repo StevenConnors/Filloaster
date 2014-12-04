@@ -1,0 +1,175 @@
+<!DOCTYPE HTML>
+<html>
+<head>  
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Website</title>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
+    <link href="/bootstrap/css/custom.css" rel = "stylesheet">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+
+    <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+    <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <style type = "text/css">
+    body
+    {
+        background: white;
+    }
+    </style>
+    <script type="text/javascript">
+    //Global Variables
+    var iosocket;
+    var state;
+
+    window.onload = function() 
+    {
+        initSocketIO();
+    };
+
+    function initSocketIO()
+    {
+        iosocket = io.connect();
+        iosocket.on('onconnection', function (value) 
+        {
+            iosocket.on('updateState', function (receivedData)
+            {
+                state = receivedData.state;
+                //console.log(typeof("4"));
+                if (state == "4"){
+                    document.getElementById("test").style.backgroundColor = "red";
+                }
+                else{
+                    document.getElementById("test").style.backgroundColor = "green";
+                }
+            });
+        });
+    }
+    </script>
+</head>
+
+<body>
+    <nav id="myNavbar" class="navbar navbar-default" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbarCollapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class = "navbar-brand" href = "main" style="margin-left:-150px;"><img src = "img/logo.png" style="max-width:25px; margin-top:0px;"/></a>
+                <a class="navbar-brand" href="main" style = "margin-left:-110px; margin-top:4px;" >Filloaster</a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="nav navbar-nav" >
+                    <li><a href="profile.html">Profile</a></li>
+                    <li><a href="interface" >Interface</a></li>
+                    <li><a href="restaurant" >Restaurant</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div id= "container-fluid">
+        <div class = "row">
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div class = "chair"></div>
+            </div>
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div class = "box"></div>
+            </div>
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div class = "chair"></div>
+            </div>
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div class = "chair"></div>
+            </div>
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div class = "box"></div>
+            </div>
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div class = "chair"></div>
+            </div>
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div class = "chair"></div>
+            </div>
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div class = "box"></div>
+            </div>
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div class = "chair"></div>
+            </div>
+        </div>
+        <div class = "row">
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div class = "chair"></div>
+            </div>
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div class = "box"></div>
+            </div>
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div class = "chair"></div>
+            </div>
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div class = "chair"></div>
+            </div>
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div class = "box"></div>
+            </div>
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div id="test" class = "chair"></div>
+            </div>
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div class = "chair"></div>
+            </div>
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div class = "box"></div>
+            </div>
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div class = "chair"></div>
+            </div>
+        </div>
+        <div class = "row">
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div class = "chair"></div>
+            </div>
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div class = "box"></div>
+            </div>
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div class = "chair"></div>
+            </div>
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div class = "chair"></div>
+            </div>
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div class = "box"></div>
+            </div>
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div class = "chair"></div>
+            </div>
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div class = "chair"></div>
+            </div>
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div class = "box"></div>
+            </div>
+            <div class = "col-md-1 col-sm-6 col-xs-4">
+                <div class = "chair"></div>
+            </div>
+        </div>
+        
+    </div>
+
+</body>
+</html>

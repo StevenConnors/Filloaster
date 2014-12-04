@@ -1,0 +1,94 @@
+
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Website</title>
+    <link href="css/bootstrap.min.css" rel = "stylesheet">
+    <link href="css/custom.css" rel = "stylesheet">
+    <script src = "js/respond.js"></script>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+  <div class="container">
+  <div class="login-container">
+            <div id="output"></div>
+            <div class="avatar"></div>
+            <div class="form-box">
+                <form method="get" action="profile.html">
+                    <input name="user" type="text" placeholder="username">
+                    <input type="password" placeholder="password" id="myPsw" value= "">
+                    <button class="btn btn-info btn-block login" type="submit">Login</button>
+                </form>
+                <form action="profile.html">
+                  <input type="hidden" name="varname"  value="" />
+                </form>
+            </div>
+        </div>
+</FORM>
+        
+</div>
+
+<script type="text/javascript">
+function redirect(){
+    var textfield = $("input[name=user]");
+
+    setTimeout(function () {window.location.href = "profile.html" + "?user=" + textfield.val() + "&";}, 1000); //will call the function after 2 secs
+}
+
+$(function(){
+var textfield = $("input[name=user]");
+var pass = document.getElementById("myPsw");
+
+$('button[type="submit"]').click(function(e) {
+    e.preventDefault();
+    //little validation just to check username
+    if((pass.value != "") && (textfield.val() ==""))
+      {
+        $("#output").removeClass(' alert alert-success');
+        $("#output").addClass("alert alert-danger animated fadeInUp").html("Please enter username");
+      }
+    else if((pass.value == "") && (textfield.val() ==""))
+      {
+        $("#output").removeClass(' alert alert-success');
+        $("#output").addClass("alert alert-danger animated fadeInUp").html("Please enter all fields");
+      }
+    else if ((textfield.val()!= "") && (pass.value != "")) 
+    {
+      //$("body").scrollTo("#output");
+      $("#output").addClass("alert alert-success animated fadeInUp").html("Welcome back " + "<span style='text-transform:uppercase'>" + textfield.val() + "</span>");
+      $("#output").removeClass(' alert-danger');
+      $("input").css({ "height":"0", "padding":"0", "margin":"0", "opacity":"0"});
+
+      //show avatar
+      $(".avatar").css({"background-image": "url('https://cdn3.iconfinder.com/data/icons/black-easy/512/538474-user_512x512.png')"});
+
+      //change button text 
+      $('button[type="submit"]').html("redirecting...").removeClass("btn-info").click(redirect());
+      
+      
+    } 
+    else 
+    {
+      $("#output").removeClass(' alert alert-success');
+      $("#output").addClass("alert alert-danger animated fadeInUp").html("Please enter password");
+
+      //remove success mesage replaced with error message
+      
+    }
+
+});
+});
+</script>
+
+<!-- javascript -->
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script src = "js/bootstrap.min.js"></script>
+
+</body>
+</html>
