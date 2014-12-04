@@ -2,10 +2,22 @@
 <html>
 <head>  
 	<link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
+
 	<link rel="stylesheet" type="text/css" href="style.css">
+	<link href="/bootstrap/css/bootstrap.min.css" rel = "stylesheet">
+    <link href="/bootstrap/css/custom.css" rel = "stylesheet">
+	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+
 	<script src="http://code.jquery.com/jquery-1.8.3.js"></script>
 	<script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
+	<style type = "text/css">
+    body
+    {
+        background: white;
+    }
+    </style>
 	<script>
 	
 	//Global Variables
@@ -14,10 +26,15 @@
 	var poll1;
 	var text;
 	var potValue;
-	var prevPotValue;
+	var prevPotValue =0 ;
 	var toggleVal = 0;
 
 	var drink = "none";
+	var state = 0;
+
+	var fullGlass;
+	var currentGlass;
+	var elapsed;
 
 	window.onload = function() 
 	{
@@ -27,46 +44,80 @@
 	function initSocketIO()
 	{
 		iosocket = io.connect();
-		iosocket.on('onconnection', function(value) 
+		iosocket.on('onconnection', function (value) 
 		{
-			pollOneH = value.pollOneValue/2; // recieve start poll value from server
+			pollOneH = 0; // recieve start poll value from server
+			state = 0;
 			initPoll();
 			initButton();
 			// recieve changed values by other client from server
-			iosocket.on('updateData', function (recievedData) 
+			iosocket.on('updateData', function (receivedData) 
 			{
-				pollOneH = recievedData.pollOneValue/2; // recieve start poll value from server
+				pollOneH = receivedData.pollOneValue/2; // recieve start poll value from server
+				nan = isNaN(pollOneH)
+				if (nan){
+					pollOneH = 0;
+				}
 			});
-
-			/*iosocket.on('updateDrink', function(drinkData)
+			iosocket.on('updateDrink', function (receivedData)
 			{
-				drink = drinkData.drink;
-			});*/
+				drink = receivedData.drink;
+			});
+			iosocket.on('updateState', function (receivedData)
+			{
+				state = receivedData.state;
+			});
+			iosocket.on('updateFullGlass', function (receivedData)
+			{
+				fullGlass = receivedData.fullGlass;
+				var full = document.getElementById("full").textContent = "Full: "+ fullGlass;
+			});			
+			iosocket.on('updateCurrentGlass', function (receivedData)
+			{
+				currentGlass = receivedData.currentGlass;
+				var current = document.getElementById("current").textContent = "Current: " + currentGlass;
 
+			});		
+			iosocket.on('updateTotalAmount', function (receivedData)
+			{
+				totalAmount = receivedData.totalAmount;
+				var totalAmount = document.getElementById("total").textContent = "Total: " + totalAmount;
+
+			});
+			iosocket.on('updateElapsedData', function (receivedData)
+			{
+				elapsed = receivedData.elapsed;
+				var elapsed = document.getElementById("elapsed").textContent = "Elapsed: " + elapsed;
+
+			});
 		});
+}
+
+function initButton()
+{
+	$( "#check" ).button();
+}
+
+function initPoll()
+{
+	poll1 = 
+	{
+		x: 10,
+		y: 540,
+		w: 440,
+		h: 0
+	}
+	text = 
+	{
+		x:poll1.w/2,
+		y:100
 	}
 
-	function initButton()
-	{
-		$( "#check" ).button();
-	}
-
-	function initPoll()
-	{
-		poll1 = 
-		{
-			x: 10,
-			y: 540,
-			w: 440,
-			h: 0
-		}
-		text = 
-		{
-			x:poll1.w/2,
-			y:100
-		}
+	if (typeof(potValue) == "number"){
 		potValue = pollOneH*2;
 		prevPotValue = potValue;
+	}
+
 		//start animation
 		animation(poll1,text);
 	}
@@ -90,37 +141,41 @@
 			potValue = pollOneH*3;
 		}
 
-		content.fillText('Potmeter value: ' + potValue, text.x, text.y);
-		content.fillText('Drink is: ' + potValue, text.x, text.y-40);
+
+		content.fillText('Drink is: ' + drink, text.x, text.y-40);
+		content.fillText('State is: ' + state, text.x, text.y-80);
 
 
 		//Determines color
 		content.fillStyle = 'black';
-		if (potValue>500)
+		if (drink=="Water")
 		{
 			content.fillStyle = "blue";
+		}
+		else if (drink == "Coke")
+		{
+			content.fillStyle = "brown";
 		}
 
 		// render graph 
 		content.fillRect(poll1.x,(poll1.y-poll1.h),poll1.w,poll1.h);
-	    content.fill();
+		content.fill();
 
 		  // request new frame
-		requestAnimFrame(function() 
-		{
-			if(poll1.h < pollOneH)
-			{
-				poll1.h += (pollOneH - poll1.h)*.15;
-			}
-			else if(poll1.h > pollOneH)
-			{
-				poll1.h -= (poll1.h - pollOneH)*.15;
-			}
-			text.y = (poll1.y - poll1.h) - 5;
-			animation(poll1,text);
-		});
-	}
-	
+		  requestAnimFrame(function() 
+		  {
+		  	if(poll1.h < pollOneH)
+		  	{
+		  		poll1.h += (pollOneH - poll1.h)*.15;
+		  	}
+		  	else if(poll1.h > pollOneH)
+		  	{
+		  		poll1.h -= (poll1.h - pollOneH)*.15;
+		  	}
+		  	text.y = (poll1.y - poll1.h) - 5;
+		  	animation(poll1,text);
+		  });
+		}
 
 	// canvas request for all browsers
 	window.requestAnimFrame = (function(callback) 
@@ -136,10 +191,6 @@
 		};
 	})();
 
-
-
-
-
 	$(document).ready(function() 
 	{
 		$('#check').click(function() 
@@ -151,27 +202,44 @@
 	});
 	</script>
 
-
-<!-- Actual HTML -->
-
-
 </head>
+<!-- Actual HTML -->
 <body>
-	<div id="rData">
-		<h2>Data from Arduino</h2>
-		<canvas id="myCanvas" width="460" height="540"></canvas>
-	</div>
-	<div id="sData">
-		<h2>Data to Arduino</h2>
-		<div id="btnHolder">
-			<input type="checkbox" id="check" value="toggle"/><label for="check">Toggle LED</label>
+	<nav id="myNavbar" class="navbar navbar-default" role="navigation">
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbarCollapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class = "navbar-brand" href = "main" style="margin-left:-150px;"><img src = "img/logo.png" style="max-width:25px; margin-top:0px;"/></a>
+				<a class="navbar-brand" href="main" style = "margin-left:-110px; margin-top:4px;" >Filloaster</a>
+			</div>
+			<!-- Collect the nav links, forms, and other content for toggling -->
+			<div class="collapse navbar-collapse" id="navbarCollapse">
+				<ul class="nav navbar-nav">
+					<li><a href="profile.html">Profile</a></li>
+					<li><a href="interface" >Interface</a></li>
+					<li><a href="restaurant" >Restaurant</a></li>
+				</ul>
+			</div>
 		</div>
-	</div> 
+	</nav>
 
-	<div> 
-		<a href="dashboard"> Click me to jump to go back to dashboard </a>
-		<a href="main"> Click me to log out</a>
+	<div id="full">Full:</div>
+	<div id="current">Current:</div>
+	<div id="total">Total:</div>
+	<div id="elapsed">Elapsed:</div>
+
+
+	<div id="rData">
+		<div></div>
+		<canvas id="myCanvas" width="460" height="540"></canvas>
+		<div id="myCanvasWrapper"></div>
 	</div>
-
+	<h1>Data from Arduino</h1>
 </body>
 </html>
