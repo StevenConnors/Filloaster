@@ -26,6 +26,7 @@ handle["/img/logo.png"] = requestHandlers.sendLogo;
 handle["/bootstrap/css/filloasterdesign.png"] = requestHandlers.sendFilloasterDesign;
 handle["/bootstrap/css/prototype1.jpg"] = requestHandlers.sendPrototype1;
 handle["/bootstrap/ajax_login.php"] = requestHandlers.ajaxLogin;
+handle["/bootstrap/css/squares.png"] = requestHandlers.sendSquares;
 
 
 // Add additional links here using handle[/link] = requestHandlers.sendPathname;

@@ -34,8 +34,8 @@ var alcoholWarningSent = false;
 //Have my data (so what I already ordered) This should be an array.
 //Have an existing trie.
 var globalDB = [ ["Water",3], ["Beer",3],["Coke",2],["Red Wine",3],["Guiness",0],["Yueng",0],["SamAdams",0],["Sprite",0],["GingerAle",0],["ExpensiveWine",0],["okWine",0],["cheapWine",0] ]
-var myDB = [];
-//var myDB = ["Water"];
+//var myDB = [];
+var myDB = ["Water"];
 
 function sendSuggestions(){
 	var rootFound = false;
@@ -342,7 +342,7 @@ function setDrink(tagData)
 	//}
 	else if (tagData == "7413BBDF"){ //tag
 		drinkData = "Beer";
-		alcPercent = 0.07;
+		alcPercent = 10.07;
 	}
 	else
 	{

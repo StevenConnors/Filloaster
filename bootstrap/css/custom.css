@@ -34,7 +34,7 @@
     float:left;
 }
 
-body{background: #eee url(http://www.webtexture.net/wp-content/uploads/2012/10/10-Subtle-Textures-200x200.jpg);
+body{background: #eee url(squares.png);
     max-width: 100%}
 html,body{
     position: relative;
@@ -312,7 +312,7 @@ html,body{
     text-transform: none;
     color: #000;
     font-size: 70px;
-    margin-left: 100px;
+    margin-left: 160px;
     margin-top: -100px;
     float:left;
 
@@ -369,7 +369,7 @@ html,body{
     text-transform: none;
     color: #000;
     font-size: 65px;
-    margin-right: 170px;
+    margin-right: 230px;
     margin-top: -93px;
     float:right;
 
@@ -429,7 +429,7 @@ html,body{
     text-transform: none;
     color: #000;
     font-size: 70px;
-    margin-left: 100px;
+    margin-left: 120px;
     margin-top: -100px;
     float:left;
 

@@ -122,6 +122,13 @@ function ajaxLogin(response) {
 }
 
 
+function sendSquares(response) {
+  console.log("Request handler 'sendSquares' was called.");
+  response.writeHead(200, {"Content-Type": "img"});
+  var css = fs.readFileSync(__dirname + "/bootstrap/css/squares.png")
+  response.end(css);
+}
+
 exports.sendRestaurant = sendRestaurant;
 exports.sendMain = sendMain;
 exports.sendProfile = sendProfile;
@@ -138,5 +145,6 @@ exports.sendLogo = sendLogo;
 exports.sendFilloasterDesign = sendFilloasterDesign;
 exports.sendPrototype1 = sendPrototype1;
 exports.ajaxLogin = ajaxLogin;
+exports.sendSquares = sendSquares;
 
 
