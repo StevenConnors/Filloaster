@@ -388,26 +388,3 @@ int stringToInt()
     int _recievedVal = atoi(charHolder);
     return _recievedVal;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
