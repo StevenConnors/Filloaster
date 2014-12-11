@@ -1,3 +1,10 @@
+/* 
+index.js
+Initiates the NodeJS server. We've entered the list of urls that are called
+which are then sent into requestHandlers to get the appropriate file to return.
+*/
+
+
 var server = require("./server");
 var router = require("./route");
 var requestHandlers = require("./requestHandlers");

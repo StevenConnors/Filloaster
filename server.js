@@ -1,3 +1,17 @@
+/*
+All information regarding the state of Filloaster, whether received through the
+browser or from the Arduino is passed into here. Arduino information is passed
+via serial port and the browser information is connected via local host.
+Sockets are created here so that the information from the Arduino can be passed 
+into the browser in real time. 
+
+In addition, any computationally heavy work is done within here and not in the
+Arduino or browser. One example is the Twilio module. We raise a flag in the 
+browser / Arduino, which this server.js recognizes and executes the necessary
+action.
+
+*/
+
 var fs = require('fs'),
 http = require('http'),
 socketio = require('socket.io'),
@@ -21,13 +35,14 @@ var drinkData = "Water";
 //total amount drank
 var totalDrank;
 var goodByeSent = false;
+
 //Drinking Application:
 var alcPercent = 0; //example 0.07
 var alcoholSuggestion = 48 //in mL of pure alcohol (4 shots worth)
 var alcoholWarningSent = false;
 
 //Recommendation Application
-//Have an existing trie.
+//Have an existing example trie.
 var globalDB = [ ["Water",3], ["Beer",3],["Coke",2],["Red Wine",3],
 					["Guiness",0],["Yueng",0],["SamAdams",0],["Sprite",0],
 					["GingerAle",0],["ExpensiveWine",0],["okWine",0],
@@ -54,7 +69,6 @@ function startServer(route,handle,debug)
 	}); 
 	serialListener(debug);
 	//Comment seriallistener when not using arduino
-
 	initSocketIO(httpServer,debug);
 }
 

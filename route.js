@@ -1,3 +1,8 @@
+/*
+Route.js handles the routing of a given url to the appropriate file. This sends
+the url into requestHandlers.js and returns a file. If no file is found then 
+returns a 404 message.
+*/
 function route(handle, pathname,response,request,debug) {
   console.log("About to route a request for " + pathname);
    //typeof probes the data type of handle[pathname]. So if 

@@ -1,6 +1,13 @@
-// functions that will be executed when 
-// typeoff handle[pathname] === a function in requestHandlers.
-// the handle and function are discribed in index.js
+/* 
+requestHandlers.js
+This file takes in a url and returns a file. In each case we need to create our
+own function which handles each request. Since I'm not too familiar with Nodejs,
+I think that this portion can be done in a cleaner manner.
+
+Functions that will be executed when typeoff handle[pathname] === a function 
+in requestHandlers. The handle and function are discribed in index.js
+*/
+
 
 var fs = require('fs'),
 server = require('./server');
