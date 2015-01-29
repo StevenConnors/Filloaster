@@ -1,0 +1,243 @@
+<!DOCTYPE HTML>
+<html>
+<head>  
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<link href="/bootstrap/css/bootstrap.min.css" rel = "stylesheet">
+    <link href="/bootstrap/css/custom.css" rel = "stylesheet">
+	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+	<script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+	<script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<style type = "text/css">
+    body
+    {
+        background: white;
+    }
+    </style>
+	<script>
+	
+	//Global Variables
+	var iosocket;
+	var pollOneH = 0;
+	var poll1;
+	var text;
+	var potValue;
+	var prevPotValue =0 ;
+	var toggleVal = 0;
+
+	var drink = "none";
+	var state = 0;
+
+	var fullGlass;
+	var currentGlass;
+	var elapsed;
+
+	window.onload = function() 
+	{
+		initSocketIO();
+	};
+
+	function initSocketIO()
+	{
+		iosocket = io.connect();
+		iosocket.on('onconnection', function (value) 
+		{
+			pollOneH = 0; // recieve start poll value from server
+			state = 0;
+			initPoll();
+			initButton();
+			// recieve changed values by other client from server
+			iosocket.on('updateData', function (receivedData) 
+			{
+				pollOneH = receivedData.pollOneValue/2; // recieve start poll value from server
+				nan = isNaN(pollOneH)
+				if (nan){
+					pollOneH = 0;
+				}
+			});
+			iosocket.on('updateDrink', function (receivedData)
+			{
+				drink = receivedData.drink;
+			});
+			iosocket.on('updateState', function (receivedData)
+			{
+				state = receivedData.state;
+			});
+			iosocket.on('updateFullGlass', function (receivedData)
+			{
+				fullGlass = receivedData.fullGlass;
+				var full = document.getElementById("full").textContent = "Full: "+ fullGlass;
+			});			
+			iosocket.on('updateCurrentGlass', function (receivedData)
+			{
+				currentGlass = receivedData.currentGlass;
+				var current = document.getElementById("current").textContent = "Current: " + currentGlass;
+
+			});		
+			iosocket.on('updateTotalAmount', function (receivedData)
+			{
+				totalAmount = receivedData.totalAmount;
+				var totalAmount = document.getElementById("total").textContent = "Total: " + totalAmount;
+
+			});
+			iosocket.on('updateElapsedData', function (receivedData)
+			{
+				elapsed = receivedData.elapsed;
+				var elapsed = document.getElementById("elapsed").textContent = "Elapsed: " + elapsed;
+
+			});
+		});
+}
+
+function initButton()
+{
+	$( "#check" ).button();
+}
+
+function initPoll()
+{
+	poll1 = 
+	{
+		x: 10,
+		y: 540,
+		w: 440,
+		h: 0
+	}
+	text = 
+	{
+		x:poll1.w/2,
+		y:100
+	}
+
+	if (typeof(potValue) == "number"){
+		potValue = pollOneH*2;
+		prevPotValue = potValue;
+	}
+
+		//start animation
+		animation(poll1,text);
+	}
+
+	function animation(poll1,text)
+	{
+		var canvas = document.getElementById("myCanvas");
+		var content = canvas.getContext("2d");
+
+		// clear canvas
+		content.clearRect(0, 0, 460, 540);
+		content.fillStyle = 'black';
+		content.textAlign = 'center';
+		content.font = '20pt Calibri';
+		
+		// make the wobbely values stop 
+		//3 is a magic number
+		if(pollOneH*3 > prevPotValue+3 || pollOneH*3 < prevPotValue-3)
+		{
+			prevPotValue = potValue;
+			potValue = pollOneH*3;
+		}
+
+
+		content.fillText('Drink is: ' + drink, text.x, text.y-40);
+		content.fillText('State is: ' + state, text.x, text.y-80);
+
+
+		//Determines color
+		content.fillStyle = 'black';
+		if (drink=="Water")
+		{
+			content.fillStyle = "blue";
+		}
+		else if (drink == "Coke")
+		{
+			content.fillStyle = "brown";
+		}
+
+		// render graph 
+		content.fillRect(poll1.x,(poll1.y-poll1.h),poll1.w,poll1.h);
+		content.fill();
+
+		  // request new frame
+		  requestAnimFrame(function() 
+		  {
+		  	if(poll1.h < pollOneH)
+		  	{
+		  		poll1.h += (pollOneH - poll1.h)*.15;
+		  	}
+		  	else if(poll1.h > pollOneH)
+		  	{
+		  		poll1.h -= (poll1.h - pollOneH)*.15;
+		  	}
+		  	text.y = (poll1.y - poll1.h) - 5;
+		  	animation(poll1,text);
+		  });
+		}
+
+	// canvas request for all browsers
+	window.requestAnimFrame = (function(callback) 
+	{
+		return window.requestAnimationFrame || 
+		window.webkitRequestAnimationFrame || 
+		window.mozRequestAnimationFrame || 
+		window.oRequestAnimationFrame || 
+		window.msRequestAnimationFrame ||
+		function(callback) 
+		{
+		  window.setTimeout(callback, 1000 / 30); // 30 frames per second
+		};
+	})();
+
+	$(document).ready(function() 
+	{
+		$('#check').click(function() 
+		{
+			toggleVal += 1;
+			toggleVal %= 2;
+			iosocket.emit('buttonval',toggleVal);
+		});
+	});
+	</script>
+
+</head>
+<!-- Actual HTML -->
+<body>
+	<nav id="myNavbar" class="navbar navbar-default" role="navigation">
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbarCollapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class = "navbar-brand" href = "main" style="margin-left:-150px;"><img src = "img/logo.png" style="max-width:25px; margin-top:0px;"/></a>
+				<a class="navbar-brand" href="main" style = "margin-left:-110px; margin-top:4px;" >Filloaster</a>
+			</div>
+			<!-- Collect the nav links, forms, and other content for toggling -->
+			<div class="collapse navbar-collapse" id="navbarCollapse">
+				<ul class="nav navbar-nav">
+					<li><a href="profile.html">Profile</a></li>
+					<li><a href="interface" >Interface</a></li>
+					<li><a href="restaurant" >Restaurant</a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<div id="full">Full:</div>
+	<div id="current">Current:</div>
+	<div id="total">Total:</div>
+	<div id="elapsed">Elapsed:</div>
+
+
+	<div id="rData">
+		<div></div>
+		<canvas id="myCanvas" width="460" height="540"></canvas>
+		<div id="myCanvasWrapper"></div>
+	</div>
+	<h1>Data from Arduino</h1>
+</body>
+</html>
